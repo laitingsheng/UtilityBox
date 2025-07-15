@@ -1,8 +1,10 @@
+import { glob } from "glob";
+import { startCase } from "lodash";
+import fs from "node:fs/promises";
 import path from "node:path";
 import type { Compiler, Configuration, WebpackPluginInstance } from "webpack";
-import { RawSource } from "webpack-sources";
+import { OriginalSource, RawSource } from "webpack-sources";
 
-import CopyPlugin from "copy-webpack-plugin";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 import HtmlMinimizerPlugin from "html-minimizer-webpack-plugin";
 import JsonMinimizerPlugin from "json-minimizer-webpack-plugin";
@@ -10,23 +12,31 @@ import MiniCssExtractPlugin from "mini-css-extract-plugin";
 
 import package_info from "./package.json";
 
-class ExtensionManifestGeneratorPlugin implements WebpackPluginInstance {
+class ChromeExtensionPlugin implements WebpackPluginInstance {
+	private permissions: chrome.runtime.ManifestPermissions[];
+
+	constructor(permissions: chrome.runtime.ManifestPermissions[]) {
+		this.permissions = permissions;
+	}
+
 	apply(compiler: Compiler): void {
 		compiler.hooks.make.tapPromise(this.constructor.name, async (compilation) => {
 			const manifest: chrome.runtime.ManifestV3 = {
 				manifest_version: 3,
-				name: package_info.name.split(/[-_]+/).map(
-					word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-				).join(" "),
+				name: startCase(package_info.name),
 				version: package_info.version,
 				incognito: "not_allowed",
 				options_page: "options.html",
-				permissions: [
-					"bookmarks",
-					"storage",
-				],
+				permissions: this.permissions,
 			};
 			compilation.assets["manifest.json"] = new RawSource(JSON.stringify(manifest));
+
+			for (const file of await glob("public/*.html")) {
+				compilation.assets[path.basename(file)] = new OriginalSource(await fs.readFile(file, {
+					encoding: "utf8",
+					flag: "r",
+				}), file);
+			}
 		});
 	}
 }
@@ -78,13 +88,10 @@ const config: Configuration = {
 		extensions: [".ts", ".tsx", ".css", ".js"],
 	},
 	plugins: [
-		new ExtensionManifestGeneratorPlugin(),
-		new CopyPlugin({
-			patterns: [
-				{ from: "public", to: "." },
-			],
-			options: {},
-		}),
+		new ChromeExtensionPlugin([
+			"bookmarks",
+			"storage",
+		]),
 		new MiniCssExtractPlugin({
 			filename: "[name].css",
 		}),
