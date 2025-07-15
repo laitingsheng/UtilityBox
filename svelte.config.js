@@ -13,6 +13,12 @@ const config = {
 			strict: true,
 		}),
 		appDir: "bundle",
+		csp: {
+			mode: "hash",
+			directives: {
+				"script-src": ["self"],
+			},
+		},
 	},
 };
 
