@@ -1,36 +1,40 @@
-import tailwindcss from '@tailwindcss/vite';
-import { sveltekit } from '@sveltejs/kit/vite';
+import { fileURLToPath, URL } from "node:url";
+
 import lodash from "lodash";
-import { defineConfig } from 'vite';
-import devtoolsJson from 'vite-plugin-devtools-json';
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import vueJsx from "@vitejs/plugin-vue-jsx";
+import vueDevTools from "vite-plugin-vue-devtools";
 
-import package_info from './package.json';
+import package_info from "./package.json";
 
+// https://vite.dev/config/
 export default defineConfig({
 	plugins: [
-		tailwindcss(),
-		sveltekit(),
+		vue(),
+		vueJsx(),
 		{
 			name: "generate-manifest",
 			generateBundle() {
-				const manifest: chrome.runtime.ManifestV3 = {
-					manifest_version: 3,
-					name: lodash.startCase(package_info.name),
-					version: package_info.version,
-					incognito: "not_allowed",
-					options_page: "index.html",
-					permissions: [
-						"bookmarks",
-						"storage",
-					],
-				};
 				this.emitFile({
-					type: 'asset',
-					fileName: 'manifest.json',
-					source: JSON.stringify(manifest),
+					type: "asset",
+					fileName: "manifest.json",
+					source: JSON.stringify({
+						manifest_version: 3,
+						name: lodash.startCase(package_info.name),
+						version: package_info.version,
+						incognito: "not_allowed",
+						options_page: "index.html",
+						permissions: ["bookmarks", "storage"],
+					} as chrome.runtime.ManifestV3),
 				});
 			},
 		},
-		devtoolsJson(),
+		vueDevTools(),
 	],
+	resolve: {
+		alias: {
+			"@": fileURLToPath(new URL("./src", import.meta.url)),
+		},
+	},
 });
