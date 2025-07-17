@@ -3,4 +3,5 @@
 @plugin "@tailwindcss/typography";
 @plugin "daisyui" {
 	themes: all;
+	exclude: rootscrollgutter;
 }

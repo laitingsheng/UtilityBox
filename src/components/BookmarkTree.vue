@@ -1,40 +1,30 @@
 <script setup lang="ts">
-import BookmarkTreeItem from "./BookmarkTreeItem.vue";
+import { faBookmark, faCircleExclamation, faFolder } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-defineProps({
-	folderonly: {
-		type: Boolean,
-		required: true,
-	},
-	nodeid: {
-		type: String,
-		required: true,
-	},
-	title: {
-		type: String,
-		required: true,
-	},
-	nodes: {
-		type: Array<chrome.bookmarks.BookmarkTreeNode>,
-		required: false,
-	},
-});
+import type { BookmarkFolder } from "../stores/bookmarks";
+import BookmarkItem from "./BookmarkItem.vue";
 
-defineEmits<{
-	(e: "error", message: string): void;
-}>();
+defineProps<BookmarkFolder>();
 </script>
 
 <template>
-	<div class="card card-border bg-base-200 w-full my-8">
-		<div class="card-body">
-			<h2 class="card-title">{{ title }}</h2>
-			<ul v-if="nodes?.length !== 0" class="menu w-full">
-				<BookmarkTreeItem :folderonly :nodeid :nodes @error="(m) => $emit('error', m)" />
+	<li :id="`bookmark-folder-${id}`">
+		<details>
+			<summary>
+				<FontAwesomeIcon :icon="folder ? faFolder : faBookmark" />
+				{{ title }}
+			</summary>
+			<ul>
+				<template v-for="(child, index) in children">
+					<a v-if="child === undefined" :key="`${id}-filtered-${index}`" role="alert" class="alert alert-warning alert-soft">
+						<FontAwesomeIcon :icon="faCircleExclamation" />
+						&lt;Filtered Bookmark&gt;
+					</a>
+					<BookmarkTree v-else-if="child.folder" :key="`bookmark-folder-${child?.id}`" v-bind="child" />
+					<BookmarkItem v-else :key="`bookmark-item-${child?.id}`" v-bind="child" />
+				</template>
 			</ul>
-		</div>
-		<div class="card-actions justify-center px-4 pb-4">
-			<a class="btn btn-primary">Save</a>
-		</div>
-	</div>
+		</details>
+	</li>
 </template>
