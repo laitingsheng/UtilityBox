@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { faBookmark, faCircleExclamation, faFolder } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-
 import type { BookmarkFolder } from "../stores/bookmarks";
 import BookmarkItem from "./BookmarkItem.vue";
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import type { BookmarkItem } from '../stores/bookmarks';
-import { use_preferences_store } from '../stores/preferences';
-import { faBookmark } from '@fortawesome/free-solid-svg-icons';
+import { faBookmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import type { BookmarkItem } from "../stores/bookmarks";
+import { use_preferences_store } from "../stores/preferences";
 
 defineProps<BookmarkItem>();
 
