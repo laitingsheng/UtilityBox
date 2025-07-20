@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import BookmarkTree from "./BookmarkTree.vue";
 import { use_bookmarks_store, type Bookmark } from "../stores/bookmarks";
+import BookmarkFolderComponent from "./BookmarkFolderComponent.vue";
 
 const bookmarks_store = use_bookmarks_store();
 
@@ -17,18 +17,18 @@ await chrome.bookmarks.getTree().then((nodes) => {
 		} as chrome.runtime.LastError;
 	}
 	const parent = bookmarks_store.traverse(root.children[0]);
-	const others = bookmarks_store.traverse(root.children[1]);
 	if (parent.folder !== true) {
 		throw {
 			message: "Parent node is not a folder.",
 		} as chrome.runtime.LastError;
 	}
+	bookmarks_store.parent = parent;
+	const others = bookmarks_store.traverse(root.children[1]);
 	if (others.folder !== true) {
 		throw {
 			message: "Others node is not a folder.",
 		} as chrome.runtime.LastError;
 	}
-	bookmarks_store.parent = parent;
 	bookmarks_store.others = others;
 }).catch((reason) => {
 	console.error(`chrome.bookmarks.getTree: ${reason}`);
@@ -131,6 +131,9 @@ chrome.bookmarks.onRemoved.addListener((id, info) => {
 	}
 	if (info.index < parent.children.length && parent.children[info.index]?.id === id) {
 		parent.children.splice(info.index, 1);
+		if (bookmarks_store.selected_id === id) {
+			bookmarks_store.selected_id = undefined;
+		}
 		delete bookmarks_store.bookmarks[id];
 		return;
 	}
@@ -139,6 +142,6 @@ chrome.bookmarks.onRemoved.addListener((id, info) => {
 </script>
 
 <template>
-	<BookmarkTree v-if="bookmarks_store.parent !== undefined" v-bind="bookmarks_store.parent" />
-	<BookmarkTree v-if="bookmarks_store.others !== undefined" v-bind="bookmarks_store.others" />
+	<BookmarkFolderComponent v-if="bookmarks_store.parent !== undefined" v-bind="bookmarks_store.parent" />
+	<BookmarkFolderComponent v-if="bookmarks_store.others !== undefined" v-bind="bookmarks_store.others" />
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BookmarkModalComponent from "./components/BookmarkModalComponent.vue";
 import BookmarkShowcaseComponent from "./components/BookmarkShowcaseComponent.vue";
 import { use_preferences_store } from "./stores/preferences";
 
@@ -52,4 +53,5 @@ async function switch_folderonly() {
 			</div>
 		</div>
 	</main>
+	<BookmarkModalComponent />
 </template>
