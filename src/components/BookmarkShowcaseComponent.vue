@@ -6,28 +6,20 @@ const bookmarks_store = use_bookmarks_store();
 
 await chrome.bookmarks.getTree().then((nodes) => {
 	if (nodes.length !== 1) {
-		throw {
-			message: "Bookmark root node is not a single node.",
-		} as chrome.runtime.LastError;
+		throw new RangeError("Bookmark root node is not a single node.");
 	}
 	const root = nodes[0];
 	if (root.children?.length !== 2) {
-		throw {
-			message: "Bookmark root node should have exactly two top-level nodes.",
-		} as chrome.runtime.LastError;
+		throw new RangeError("Bookmark root node should have exactly two top-level nodes.");
 	}
 	const parent = bookmarks_store.traverse(root.children[0]);
 	if (parent.folder !== true) {
-		throw {
-			message: "Parent node is not a folder.",
-		} as chrome.runtime.LastError;
+		throw new TypeError("Parent node is not a folder.");
 	}
 	bookmarks_store.parent = parent;
 	const others = bookmarks_store.traverse(root.children[1]);
 	if (others.folder !== true) {
-		throw {
-			message: "Others node is not a folder.",
-		} as chrome.runtime.LastError;
+		throw new TypeError("Others node is not a folder.");
 	}
 	bookmarks_store.others = others;
 }).catch((reason) => {
@@ -37,7 +29,7 @@ await chrome.bookmarks.getTree().then((nodes) => {
 chrome.bookmarks.onChanged.addListener((id, info) => {
 	const bookmark = bookmarks_store.bookmarks[id];
 	if (bookmark === undefined) {
-		console.error(`Detected bookmark change for unknown id ${id}.`);
+		console.error(`chrome.bookmarks.onChanged: Detected bookmark change for unknown id ${id}.`);
 		return;
 	}
 	bookmark.title = info.title;
@@ -142,6 +134,8 @@ chrome.bookmarks.onRemoved.addListener((id, info) => {
 </script>
 
 <template>
-	<BookmarkFolderComponent v-if="bookmarks_store.parent !== undefined" v-bind="bookmarks_store.parent" />
-	<BookmarkFolderComponent v-if="bookmarks_store.others !== undefined" v-bind="bookmarks_store.others" />
+	<ul class="menu w-full">
+		<BookmarkFolderComponent v-if="bookmarks_store.parent !== undefined" v-bind="bookmarks_store.parent" />
+		<BookmarkFolderComponent v-if="bookmarks_store.others !== undefined" v-bind="bookmarks_store.others" />
+	</ul>
 </template>

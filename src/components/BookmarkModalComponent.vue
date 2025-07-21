@@ -9,7 +9,7 @@ const bookmarks_store = use_bookmarks_store();
 
 <template>
 	<dialog v-if="bookmarks_store.selected !== undefined" class="modal" open @close="bookmarks_store.selected_id = undefined">
-		<form method="dialog" class="modal-box card-body">
+		<form method="dialog" class="modal-box card-body max-w-full">
 			<h2 class="card-title">Attributes</h2>
 			<BookmarkBaseAttributesComponent v-bind="bookmarks_store.selected" />
 			<component :is="bookmarks_store.selected.folder ? BookmarkFolderAttributesComponent : BookmarkItemAttributesComponent" v-bind="bookmarks_store.selected" />

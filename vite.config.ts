@@ -30,7 +30,8 @@ export default defineConfig({
 						version: package_info.version,
 						incognito: "not_allowed",
 						options_page: "index.html",
-						permissions: ["bookmarks", "storage"],
+						permissions: ["bookmarks", "history", "storage"],
+						minimum_chrome_version: "95",
 					} as chrome.runtime.ManifestV3),
 				});
 			},

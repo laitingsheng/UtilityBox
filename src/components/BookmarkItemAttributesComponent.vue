@@ -20,11 +20,11 @@ async function update_url(event: FocusEvent) {
 		<legend class="fieldset-legend">Item</legend>
 		<label class="input w-full max-w-full">
 			<FontAwesomeIcon :icon="faClockRotateLeft" />
-			<input :id="`bookmark-${id}-last-used`" type="text" class="grow" readonly autocomplete="off" :value="last_used.toLocaleString()" />
+			<input type="text" class="grow" readonly autocomplete="off" :value="last_used.toLocaleString()" />
 		</label>
-		<label class="input w-full max-w-full">
+		<label class="input validator w-full max-w-full">
 			<FontAwesomeIcon :icon="faLink" />
-			<input :id="`bookmark-${id}-url`" type="url" class="grow" :readonly="immutable" autocomplete="off" :value="url" minlength="1" @focusout="update_url" />
+			<input type="url" class="grow" :readonly="immutable" required autocomplete="off" :value="url" @focusout="update_url" />
 		</label>
 	</fieldset>
 </template>

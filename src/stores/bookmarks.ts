@@ -51,21 +51,20 @@ export const use_bookmarks_store = defineStore("bookmarks", {
 					title: node.title,
 					added: new Date(node.dateAdded ?? 0),
 					folder: true,
-					children: node.children?.map(this.traverse.bind(this)) ?? [],
+					children: node.children?.map((child) => this.traverse(child)) ?? [],
 					last_modified: new Date(node.dateGroupModified ?? 0),
 				};
-				this.bookmarks[node.id] = bookmark;
-				return bookmark;
+			} else {
+				bookmark = {
+					immutable: node.unmodifiable !== undefined,
+					id: node.id,
+					title: node.title,
+					added: new Date(node.dateAdded ?? 0),
+					folder: false,
+					url: node.url,
+					last_used: new Date(node.dateLastUsed ?? 0),
+				};
 			}
-			bookmark = {
-				immutable: node.unmodifiable !== undefined,
-				id: node.id,
-				title: node.title,
-				added: new Date(node.dateAdded ?? 0),
-				folder: false,
-				url: node.url,
-				last_used: new Date(node.dateLastUsed ?? 0),
-			};
 			this.bookmarks[node.id] = bookmark;
 			return bookmark;
 		},

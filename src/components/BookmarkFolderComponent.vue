@@ -11,7 +11,7 @@ const bookmarks_store = use_bookmarks_store();
 </script>
 
 <template>
-	<li :id="`bookmark-folder-${id}`">
+	<li>
 		<details>
 			<summary>
 				<FontAwesomeIcon :icon="faFolder" />
@@ -21,7 +21,7 @@ const bookmarks_store = use_bookmarks_store();
 				</button>
 			</summary>
 			<ul>
-				<template v-for="child in children" :key="`bookmark-${child?.id}`">
+				<template v-for="child in children" :key="child.id">
 					<component :is="child.folder ? BookmarkFolderComponent : BookmarkItemComponent" v-bind="child" />
 				</template>
 			</ul>

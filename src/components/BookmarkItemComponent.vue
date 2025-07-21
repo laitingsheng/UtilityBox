@@ -11,7 +11,7 @@ const preferences_store = use_preferences_store();
 </script>
 
 <template>
-	<li :id="`bookmark-item-${id}`">
+	<li>
 		<a :hidden="preferences_store.folderonly">
 			<FontAwesomeIcon :icon="faBookmark" />
 			{{ title }}

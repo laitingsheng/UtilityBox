@@ -11,7 +11,7 @@ defineProps<BookmarkFolder>();
 		<legend class="fieldset-legend">Folder</legend>
 		<label class="input w-full max-w-full">
 			<FontAwesomeIcon :icon="faClockRotateLeft" />
-			<input :id="`bookmark-${id}-last-used`" type="text" class="grow" readonly autocomplete="off" :value="last_modified.toLocaleString()" />
+			<input type="text" class="grow" readonly autocomplete="off" :value="last_modified.toLocaleString()" />
 		</label>
 	</fieldset>
 </template>
