@@ -15,7 +15,7 @@ const preferences_store = use_preferences_store();
 		<a :hidden="preferences_store.folderonly">
 			<FontAwesomeIcon :icon="faBookmark" />
 			{{ title }}
-			<button type="button" class="btn btn-primary btn-xs border-0 m-0" @click="bookmarks_store.selected_id = id">
+			<button type="button" class="btn btn-primary btn-xs border-0 m-0" @click="bookmarks_store.selected = bookmarks_store.bookmarks[id]">
 				<FontAwesomeIcon :icon="faPencil" />
 			</button>
 			<a class="btn btn-info btn-xs border-0 m-0" :href="url" target="_blank">

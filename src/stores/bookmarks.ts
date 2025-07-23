@@ -26,17 +26,9 @@ export const use_bookmarks_store = defineStore("bookmarks", {
 		parent: undefined as BookmarkFolder | undefined,
 		others: undefined as BookmarkFolder | undefined,
 		bookmarks: {} as Record<string, Bookmark | undefined>,
-		selected_id: undefined as string | undefined,
+		selected: undefined as Bookmark | undefined,
+		grouping: false,
 	}),
-
-	getters: {
-		selected: (state) => {
-			if (state.selected_id === undefined) {
-				return undefined;
-			}
-			return state.bookmarks[state.selected_id];
-		},
-	},
 
 	actions: {
 		traverse(node: chrome.bookmarks.BookmarkTreeNode): Bookmark {

@@ -16,7 +16,7 @@ const bookmarks_store = use_bookmarks_store();
 			<summary>
 				<FontAwesomeIcon :icon="faFolder" />
 				{{ title }}
-				<button type="button" class="btn btn-primary btn-xs border-0 m-0" @click="bookmarks_store.selected_id = id">
+				<button type="button" class="btn btn-primary btn-xs border-0 m-0" @click="bookmarks_store.selected = bookmarks_store.bookmarks[id]">
 					<FontAwesomeIcon :icon="faPencil" />
 				</button>
 			</summary>
