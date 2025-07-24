@@ -20,7 +20,7 @@ async function update_url(event: FocusEvent) {
 		<legend class="fieldset-legend">Item</legend>
 		<label class="input w-full max-w-full">
 			<FontAwesomeIcon :icon="faClockRotateLeft" />
-			<input type="text" class="grow" readonly autocomplete="off" :value="last_used.toLocaleString()" />
+			<input type="text" class="grow" readonly autocomplete="off" spellcheck="false" :value="last_used.toLocaleString()" />
 		</label>
 		<label class="input validator w-full max-w-full">
 			<FontAwesomeIcon :icon="faLink" />
