@@ -1,0 +1,64 @@
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "laitingsheng"
+    assignees:
+      - "laitingsheng"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    groups:
+      vue-ecosystem:
+        patterns:
+          - "vue*"
+          - "@vue/*"
+          - "@vitejs/*"
+          - "vite*"
+      typescript-ecosystem:
+        patterns:
+          - "typescript"
+          - "@types/*"
+          - "@typescript-eslint/*"
+      build-tools:
+        patterns:
+          - "eslint*"
+          - "prettier*"
+          - "tailwindcss*"
+          - "@tailwindcss/*"
+          - "daisyui"
+      testing-tools:
+        patterns:
+          - "*test*"
+          - "*jest*"
+          - "*vitest*"
+    ignore:
+      # Ignore major version updates for stable dependencies
+      - dependency-name: "vue"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "laitingsheng"
+    assignees:
+      - "laitingsheng"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
