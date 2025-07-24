@@ -27,7 +27,6 @@ export const use_bookmarks_store = defineStore("bookmarks", {
 		others: undefined as BookmarkFolder | undefined,
 		bookmarks: {} as Record<string, Bookmark | undefined>,
 		selected: undefined as Bookmark | undefined,
-		grouping: false,
 	}),
 
 	actions: {

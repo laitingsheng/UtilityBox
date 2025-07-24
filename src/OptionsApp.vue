@@ -4,24 +4,29 @@ import BookmarkFolderAttributesComponent from "./components/BookmarkFolderAttrib
 import BookmarkFolderComponent from "./components/BookmarkFolderComponent.vue";
 import BookmarkItemAttributesComponent from "./components/BookmarkItemAttributesComponent.vue";
 import CleaningRuleComponent from "./components/CleaningRuleComponent.vue";
+import GroupingRuleComponent from "./components/GroupingRuleComponent.vue";
 import RewriteRuleComponent from "./components/RewriteRuleComponent.vue";
 import { use_bookmarks_store, type Bookmark } from "./stores/bookmarks";
 import { use_cleaning_store, type CleaningRuleProperties } from "./stores/cleaning";
+import { use_grouping_store, type GroupingRuleProperties } from "./stores/grouping";
 import { use_preferences_store } from "./stores/preferences";
 import { use_rewrite_store } from "./stores/rewrite";
 
 const bookmarks_store = use_bookmarks_store();
 const cleaning_store = use_cleaning_store();
+const grouping_store = use_grouping_store();
 const preferences_store = use_preferences_store();
 const rewrite_store = use_rewrite_store();
 
 chrome.storage.sync.get<{
 	folderonly: boolean;
+	groupingrules: Record<string, Record<string, GroupingRuleProperties>>;
 	cleaningrules: Record<string, CleaningRuleProperties>;
 	cleaningruledefault: CleaningRuleProperties;
 	rewriterules: Record<string, string>;
 }>({
 	folderonly: true,
+	groupingrules: {},
 	cleaningrules: {},
 	cleaningruledefault: {
 		subdomains: true,
@@ -29,8 +34,9 @@ chrome.storage.sync.get<{
 		history: true,
 	},
 	rewriterules: {},
-}).then(({ folderonly, cleaningrules, cleaningruledefault, rewriterules }) => {
+}).then(({ folderonly, groupingrules, cleaningrules, cleaningruledefault, rewriterules }) => {
 	preferences_store.folderonly = folderonly;
+	grouping_store.rules = groupingrules;
 	cleaning_store.rules = cleaningrules;
 	cleaning_store.ruledefault = cleaningruledefault;
 	rewrite_store.rules = rewriterules;
@@ -161,6 +167,7 @@ chrome.bookmarks.onRemoved.addListener((id, info) => {
 			bookmarks_store.selected = undefined;
 		}
 		delete bookmarks_store.bookmarks[id];
+		delete grouping_store.rules[id];
 		return;
 	}
 	console.error(`chrome.bookmarks.onRemoved: Bookmark #${id} is not found in parent #${info.parentId} at index ${info.index}.`);
@@ -174,6 +181,38 @@ async function switch_folderonly(event: Event) {
 	}).catch((reason) => {
 		console.error(`chrome.storage.sync.set: ${reason}`);
 	});
+}
+
+async function group_bookmarks_into(id: string) {
+	grouping_store.running = true;
+	const rules = grouping_store.rules[id];
+	if (rules === undefined) {
+		console.error(`Grouping rules for folder #${id} are not defined.`);
+		grouping_store.running = false;
+		return;
+	}
+	for (const hostname in rules) {
+		const properties = rules[hostname];
+		if (properties === undefined) {
+			console.error(`Grouping rule for ${hostname} is undefined.`);
+			continue;
+		}
+		const pattern = new URLPattern({
+			hostname: properties.subdomains ? `(.+\\.)?${hostname}` : hostname,
+		});
+		for (const result of await chrome.bookmarks.search({
+			query: hostname,
+		})) {
+			if (result.parentId === id) {
+				continue;
+			}
+			if (result.url !== undefined && pattern.test(result.url)) {
+				console.info(`Moving bookmark #${result.id} (${result.url}) to folder #${id}...`);
+				await chrome.bookmarks.move(result.id, { parentId: id });
+			}
+		}
+	}
+	grouping_store.running = false;
 }
 
 async function rewrite_bookmarks_urls() {
@@ -257,6 +296,16 @@ async function clean_history() {
 	cleaning_store.history = false;
 }
 
+async function save_grouping_rules() {
+	await chrome.storage.sync.set({
+		groupingruledefault: grouping_store.ruledefault,
+		groupingrules: grouping_store.rules,
+	}).catch((reason) => {
+		console.error(`chrome.storage.sync.set: ${reason}`);
+	});
+	grouping_store.updated = false;
+}
+
 async function save_rewrite_rules() {
 	await chrome.storage.sync.set({
 		rewriterules: rewrite_store.rules,
@@ -299,6 +348,9 @@ async function save_cleaning_rules() {
 					<li v-if="bookmarks_store.others === undefined" class="skeleton w-full h-4"></li>
 					<BookmarkFolderComponent v-else v-bind="bookmarks_store.others" />
 				</ul>
+				<div class="card-actions justify-end">
+					<button type="button" class="btn btn-primary" :disabled="!grouping_store.updated" @click="save_grouping_rules">Save</button>
+				</div>
 			</div>
 		</div>
 		<div class="card bg-base-200 my-4">
@@ -338,10 +390,16 @@ async function save_cleaning_rules() {
 			<h2 class="card-title">Attributes</h2>
 			<BookmarkBaseAttributesComponent v-bind="bookmarks_store.selected" />
 			<component :is="bookmarks_store.selected.folder ? BookmarkFolderAttributesComponent : BookmarkItemAttributesComponent" v-bind="bookmarks_store.selected" />
+			<template v-if="bookmarks_store.selected.folder">
+				<div class="divider">Grouping Rules</div>
+				<ul class="list">
+					<GroupingRuleComponent :id="bookmarks_store.selected.id" v-bind="grouping_store.ruledefault" />
+					<GroupingRuleComponent v-for="(properties, hostname, index) in grouping_store.rules[bookmarks_store.selected.id]" :key="index" :id="bookmarks_store.selected.id" :hostname v-bind="properties" />
+				</ul>
+			</template>
 			<div class="card-actions justify-end">
 				<template v-if="bookmarks_store.selected.folder">
-					<button type="button" class="btn btn-primary" :disabled="bookmarks_store.grouping">Run Rules</button>
-					<button type="button" class="btn btn-primary">Save Rules</button>
+					<button type="button" class="btn btn-primary" :disabled="grouping_store.running" @click="group_bookmarks_into(bookmarks_store.selected.id)">Run Rules</button>
 				</template>
 				<button type="submit" class="btn">Close</button>
 			</div>
