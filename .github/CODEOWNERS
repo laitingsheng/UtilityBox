@@ -1,0 +1,7 @@
+# Global code ownership
+* @laitingsheng
+
+# Dependency updates
+package.json @laitingsheng
+package-lock.json @laitingsheng
+.github/dependabot.yml @laitingsheng
