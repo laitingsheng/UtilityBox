@@ -84,7 +84,7 @@ function update_history(event: Event) {
 	<li class="list-row join">
 		<label class="input validator join-item w-full max-w-full">
 			Hostname
-			<input type="text" pattern="(?:[\p{L}\p{N}\-]+\.)+[\p{L}\p{N}]{2,}" placeholder="example.com" :value="hostname" @focusout="update_hostname" />
+			<input type="text" pattern="(?:[\p{L}\p{N}\-]+\.)+[\p{L}\p{N}]{2,}" placeholder="example.com" autocomplete="off" spellcheck="false" :value="hostname" @focusout="update_hostname" />
 		</label>
 		<label class="label join-item">
 			<input type="checkbox" class="toggle" :checked="subdomains" @change="update_subdomains" />

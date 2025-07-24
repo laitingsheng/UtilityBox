@@ -4,13 +4,39 @@ import BookmarkFolderAttributesComponent from "./components/BookmarkFolderAttrib
 import BookmarkFolderComponent from "./components/BookmarkFolderComponent.vue";
 import BookmarkItemAttributesComponent from "./components/BookmarkItemAttributesComponent.vue";
 import CleaningRuleComponent from "./components/CleaningRuleComponent.vue";
+import RewriteRuleComponent from "./components/RewriteRuleComponent.vue";
 import { use_bookmarks_store, type Bookmark } from "./stores/bookmarks";
 import { use_cleaning_store, type CleaningRuleProperties } from "./stores/cleaning";
 import { use_preferences_store } from "./stores/preferences";
+import { use_rewrite_store } from "./stores/rewrite";
 
 const bookmarks_store = use_bookmarks_store();
 const cleaning_store = use_cleaning_store();
 const preferences_store = use_preferences_store();
+const rewrite_store = use_rewrite_store();
+
+chrome.storage.sync.get<{
+	folderonly: boolean;
+	cleaningrules: Record<string, CleaningRuleProperties>;
+	cleaningruledefault: CleaningRuleProperties;
+	rewriterules: Record<string, string>;
+}>({
+	folderonly: true,
+	cleaningrules: {},
+	cleaningruledefault: {
+		subdomains: true,
+		bookmarks: false,
+		history: true,
+	},
+	rewriterules: {},
+}).then(({ folderonly, cleaningrules, cleaningruledefault, rewriterules }) => {
+	preferences_store.folderonly = folderonly;
+	cleaning_store.rules = cleaningrules;
+	cleaning_store.ruledefault = cleaningruledefault;
+	rewrite_store.rules = rewriterules;
+}, (reason) => {
+	console.error(`chrome.storage.sync.get: ${reason}`);
+});
 
 chrome.bookmarks.getTree().then((nodes) => {
 	if (nodes.length !== 1) {
@@ -140,26 +166,6 @@ chrome.bookmarks.onRemoved.addListener((id, info) => {
 	console.error(`chrome.bookmarks.onRemoved: Bookmark #${id} is not found in parent #${info.parentId} at index ${info.index}.`);
 });
 
-chrome.storage.sync.get<{
-	folderonly: boolean;
-	cleaningrules: Record<string, CleaningRuleProperties>;
-	cleaningruledefault: CleaningRuleProperties;
-}>({
-	folderonly: true,
-	cleaningrules: {},
-	cleaningruledefault: {
-		subdomains: true,
-		bookmarks: false,
-		history: true,
-	},
-}).then(({ folderonly, cleaningrules, cleaningruledefault }) => {
-	preferences_store.folderonly = folderonly;
-	cleaning_store.rules = cleaningrules;
-	cleaning_store.ruledefault = cleaningruledefault;
-}, (reason) => {
-	console.error(`chrome.storage.sync.get: ${reason}`);
-});
-
 async function switch_folderonly(event: Event) {
 	const checkbox = event.target as HTMLInputElement;
 	preferences_store.folderonly = checkbox.checked;
@@ -168,6 +174,33 @@ async function switch_folderonly(event: Event) {
 	}).catch((reason) => {
 		console.error(`chrome.storage.sync.set: ${reason}`);
 	});
+}
+
+async function rewrite_bookmarks_urls() {
+	rewrite_store.running = true;
+	const compiled = new Array<[RegExp, string]>();
+	for (const pattern in rewrite_store.rules) {
+		const replace = rewrite_store.rules[pattern];
+		if (replace === undefined || replace.length === 0) {
+			continue;
+		}
+		compiled.push([new RegExp(`^${pattern}$`, "v"), replace]);
+	}
+	for (const id in bookmarks_store.bookmarks) {
+		const bookmark = bookmarks_store.bookmarks[id];
+		if (bookmark?.folder !== false) {
+			continue;
+		}
+		for (const [pattern, replace] of compiled) {
+			const url = bookmark.url.replace(pattern, replace);
+			if (url !== bookmark.url) {
+				console.info(`Rewriting bookmark #${id} URL from ${bookmark.url} to ${url}...`);
+				await chrome.bookmarks.update(id, { url });
+				break;
+			}
+		}
+	}
+	rewrite_store.running = false;
 }
 
 async function clean_bookmarks() {
@@ -224,6 +257,15 @@ async function clean_history() {
 	cleaning_store.history = false;
 }
 
+async function save_rewrite_rules() {
+	await chrome.storage.sync.set({
+		rewriterules: rewrite_store.rules,
+	}).catch((reason) => {
+		console.error(`chrome.storage.sync.set: ${reason}`);
+	});
+	rewrite_store.updated = false;
+}
+
 async function save_cleaning_rules() {
 	await chrome.storage.sync.set({
 		cleaningruledefault: cleaning_store.ruledefault,
@@ -257,6 +299,23 @@ async function save_cleaning_rules() {
 					<li v-if="bookmarks_store.others === undefined" class="skeleton w-full h-4"></li>
 					<BookmarkFolderComponent v-else v-bind="bookmarks_store.others" />
 				</ul>
+			</div>
+		</div>
+		<div class="card bg-base-200 my-4">
+			<div class="card-body">
+				<h2 class="card-title">
+					Bookmarks URL Rewrite Rules
+					<span class="badge badge-warning">Advanced</span>
+					<span class="badge badge-warning">Use with cautions</span>
+				</h2>
+				<ul class="list">
+					<RewriteRuleComponent />
+					<RewriteRuleComponent v-for="(replace, pattern, index) in rewrite_store.rules" :key="index" :pattern :replace />
+				</ul>
+				<div class="card-actions justify-end">
+					<button type="button" class="btn btn-primary" :disabled="rewrite_store.running" @click="rewrite_bookmarks_urls">Run</button>
+					<button type="button" class="btn btn-primary" :disabled="!rewrite_store.updated" @click="save_rewrite_rules">Save</button>
+				</div>
 			</div>
 		</div>
 		<div class="card bg-base-200">
