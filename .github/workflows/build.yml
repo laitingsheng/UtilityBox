@@ -1,0 +1,39 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: cache-npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            cache-npm-${{ runner.os }}-
+            cache-npm-
+      - name: apt install
+        shell: bash
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y imagemagick
+          sudo ln -rs /usr/bin/convert /usr/bin/magick
+          mkdir -p public
+      - name: favicon
+        shell: bash
+        run: source ./favicon.bat
+      - name: npm install
+        shell: bash
+        run: npm install
+      - name: npm run build
+        shell: bash
+        run: npm run build
