@@ -2,6 +2,19 @@ on:
   push:
     branches:
       - main
+    paths:
+      - .github/workflows/build.yml
+      - public/**
+      - src/**
+      - env.d.ts
+      - favicon.bat
+      - favicon.png
+      - options.html
+      - package.json
+      - package-lock.json
+      - tsconfig.json
+      - tsconfig.app.json
+      - vite.config.ts
 
 jobs:
   build:
