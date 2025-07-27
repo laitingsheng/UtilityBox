@@ -31,7 +31,7 @@ function update_hostname(event: FocusEvent) {
 	}
 }
 
-function update_subdomains(event: Event) {
+function toggle_subdomains(event: Event) {
 	const checkbox = event.target as HTMLInputElement;
 	if (props.hostname === undefined) {
 		cleaning_store.ruledefault.subdomains = checkbox.checked;
@@ -47,7 +47,7 @@ function update_subdomains(event: Event) {
 	cleaning_store.updated = true;
 }
 
-function update_bookmarks(event: Event) {
+function toggle_bookmarks(event: Event) {
 	const checkbox = event.target as HTMLInputElement;
 	if (props.hostname === undefined) {
 		cleaning_store.ruledefault.bookmarks = checkbox.checked;
@@ -63,7 +63,7 @@ function update_bookmarks(event: Event) {
 	cleaning_store.updated = true;
 }
 
-function update_history(event: Event) {
+function toggle_history(event: Event) {
 	const checkbox = event.target as HTMLInputElement;
 	if (props.hostname === undefined) {
 		cleaning_store.ruledefault.history = checkbox.checked;
@@ -87,15 +87,15 @@ function update_history(event: Event) {
 			<input type="text" pattern="(?:[\p{L}\p{N}\-]+\.)+[\p{L}\p{N}]{2,}" placeholder="example.com" autocomplete="off" spellcheck="false" :value="hostname" @focusout="update_hostname" />
 		</label>
 		<label class="label join-item">
-			<input type="checkbox" class="toggle" :checked="subdomains" @change="update_subdomains" />
+			<input type="checkbox" class="toggle" :checked="subdomains" @change="toggle_subdomains" />
 			Subdomains
 		</label>
 		<label class="label join-item">
-			<input type="checkbox" class="toggle" :checked="bookmarks" @change="update_bookmarks" />
+			<input type="checkbox" class="toggle" :checked="bookmarks" @change="toggle_bookmarks" />
 			Bookmarks
 		</label>
 		<label class="label join-item">
-			<input type="checkbox" class="toggle" :checked="history" @change="update_history" />
+			<input type="checkbox" class="toggle" :checked="history" @change="toggle_history" />
 			History
 		</label>
 	</li>

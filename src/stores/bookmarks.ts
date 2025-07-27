@@ -4,60 +4,66 @@ interface BookmarkBase {
 	readonly immutable: boolean;
 	readonly id: string;
 	title: string;
-	readonly added: Date;
+	readonly added?: Date;
 }
 
 export interface BookmarkFolder extends BookmarkBase {
 	folder: true;
-	children: Array<Bookmark>;
-	readonly last_modified: Date;
+	children: Array<string>;
+	last_modified?: Date;
 }
 
 export interface BookmarkItem extends BookmarkBase {
 	folder: false;
 	url: string;
-	readonly last_used: Date;
+	last_used?: Date;
 }
 
 export type Bookmark = BookmarkItem | BookmarkFolder;
 
 export const use_bookmarks_store = defineStore("bookmarks", {
 	state: () => ({
-		parent: undefined as BookmarkFolder | undefined,
-		others: undefined as BookmarkFolder | undefined,
+		parent: undefined as string | undefined,
+		others: undefined as string | undefined,
+		selected: undefined as string | undefined,
 		bookmarks: {} as Record<string, Bookmark | undefined>,
-		selected: undefined as Bookmark | undefined,
 	}),
 
 	actions: {
-		traverse(node: chrome.bookmarks.BookmarkTreeNode): Bookmark {
-			let bookmark = this.bookmarks[node.id];
-			if (bookmark !== undefined) {
-				return bookmark;
+		traverse(node: chrome.bookmarks.BookmarkTreeNode): void {
+			if (this.bookmarks[node.id] !== undefined) {
+				return;
 			}
+			const immutable = node.unmodifiable !== undefined;
+			const added = node.dateAdded === undefined ? undefined : new Date(node.dateAdded);
 			if (node.url === undefined) {
-				bookmark = {
-					immutable: node.unmodifiable !== undefined,
+				const children: string[] = [];
+				const last_modified = node.dateGroupModified === undefined ? undefined : new Date(node.dateGroupModified);
+				this.bookmarks[node.id] = {
+					immutable,
 					id: node.id,
 					title: node.title,
-					added: new Date(node.dateAdded ?? 0),
+					added,
 					folder: true,
-					children: node.children?.map((child) => this.traverse(child)) ?? [],
-					last_modified: new Date(node.dateGroupModified ?? 0),
+					children,
+					last_modified,
 				};
+				for (const child of node.children ?? []) {
+					children.push(child.id);
+					this.traverse(child);
+				}
 			} else {
-				bookmark = {
-					immutable: node.unmodifiable !== undefined,
+				const last_used = node.dateLastUsed === undefined ? undefined : new Date(node.dateLastUsed);
+				this.bookmarks[node.id] = {
+					immutable,
 					id: node.id,
 					title: node.title,
-					added: new Date(node.dateAdded ?? 0),
+					added,
 					folder: false,
 					url: node.url,
-					last_used: new Date(node.dateLastUsed ?? 0),
+					last_used,
 				};
 			}
-			this.bookmarks[node.id] = bookmark;
-			return bookmark;
 		},
 	},
 });

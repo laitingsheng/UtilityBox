@@ -40,7 +40,7 @@ function update_pattern(event: FocusEvent) {
 }
 
 function update_replace(event: FocusEvent) {
-	if (props.pattern == undefined) {
+	if (props.pattern === undefined) {
 		console.error("Unexpected update for replace without pattern.");
 		return;
 	}

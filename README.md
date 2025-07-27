@@ -1,20 +1,20 @@
 # Bookmark Manager
 
-A powerful Chrome browser extension for advanced bookmark management with automated organization, cleaning, and URL rewriting capabilities.
+A powerful Chrome browser extension for advanced bookmark management with automated organisation, cleaning, and URL rewriting capabilities.
 
 ## Features
 
-### 📁 Smart Bookmark Organization
+### 📁 Smart Bookmark Organisation
 - **Interactive bookmark tree view** with expandable folders
-- **Folder-only view mode** to hide individual bookmarks and focus on organization
-- **Live bookmark synchronization** with Chrome's bookmark API
+- **Folder-only view mode** to hide individual bookmarks and focus on organisation
+- **Live bookmark synchronisation** with Chrome's bookmark API
 - **Edit bookmark properties** (title, URL) directly in the interface
 
-### 🎯 Automated Grouping Rules
-- **Hostname-based grouping** to automatically organize bookmarks by website
-- **Subdomain support** for flexible pattern matching
-- **Per-folder custom rules** to move matching bookmarks into specific folders
-- **Bulk bookmark organization** with one-click rule execution
+### 🎛️ Flexible Interface Controls
+- **Enable Editing** toggle to prevent accidental modifications
+- **Protected system folders** (Bookmarks Bar and Other Bookmarks)
+- **Modal dialogue** for detailed bookmark attribute editing
+- **Real-time bookmark synchronisation** with Chrome's API
 
 ### 🔧 Advanced URL Rewriting
 - **Regular expression-based URL rewriting** for bookmark cleanup
@@ -30,14 +30,14 @@ A powerful Chrome browser extension for advanced bookmark management with automa
 
 ### ⚙️ Persistent Configuration
 - **Rule persistence** using Chrome's sync storage
-- **Cross-device synchronization** of all settings and rules
+- **Cross-device synchronisation** of all settings and rules
 - **Automatic rule loading** on extension startup
 - **Real-time rule updates** and validation
 
 ## Technical Stack
 
 - **Frontend**: Vue.js 3 with TypeScript
-- **State Management**: Pinia stores
+- **State Management**: Reactive refs and Pinia stores
 - **UI Framework**: TailwindCSS with DaisyUI components
 - **Icons**: FontAwesome
 - **Build System**: Vite
@@ -100,17 +100,17 @@ src/
 ├── options.ts            # Options page entry point
 ├── OptionsApp.vue        # Main application component
 ├── components/           # Vue components
-│   ├── BookmarkBaseAttributesComponent.vue
-│   ├── BookmarkFolderComponent.vue
-│   ├── BookmarkItemComponent.vue
-│   ├── CleaningRuleComponent.vue
-│   ├── GroupingRuleComponent.vue
-│   └── RewriteRuleComponent.vue
+│   ├── BookmarkDetails.vue     # Modal dialog for bookmark editing
+│   ├── BookmarkTreeRow.vue     # Tree view row component
+│   ├── CleaningRule.vue        # Individual cleaning rule component
+│   ├── CleaningRules.vue       # Cleaning rules management
+│   ├── RewriteRule.vue         # Individual rewrite rule component
+│   └── RewriteRules.vue        # URL rewriting rules management
+├── states/               # Reactive state management
+│   └── preferences.ts    # User preferences (editing, folder-only mode)
 └── stores/               # Pinia state management
     ├── bookmarks.ts      # Bookmark data and operations
     ├── cleaning.ts       # Cleaning rules and operations
-    ├── grouping.ts       # Grouping rules and operations
-    ├── preferences.ts    # User preferences
     └── rewrite.ts        # URL rewriting rules
 ```
 
@@ -118,15 +118,16 @@ src/
 
 ### Basic Bookmark Management
 1. Open the extension options page from Chrome's extension management
-2. Browse your bookmarks in the tree view
-3. Click the edit button on any bookmark or folder to modify its properties
-4. Toggle "Folder Only" mode to focus on organizational structure
+2. Browse bookmarks in the tree view
+3. Toggle "Enable Editing" to allow modifications
+4. Click the info button (ⓘ) on any bookmark or folder to view/edit its properties
+5. Toggle "Folder Only" mode to focus on organisational structure
 
 ### Setting Up Grouping Rules
-1. Click on a folder to open its attributes dialog
-2. Add hostname-based grouping rules (e.g., `github.com`)
-3. Configure subdomain matching as needed
-4. Click "Run Rules" to automatically move matching bookmarks into the folder
+**Note**: Grouping functionality has been removed in the current version due to cross-device synchronisation limitations. Storing rules per bookmark ID creates sync conflicts when bookmark IDs differ across devices.
+1. Use the cleaning and rewriting features to organise bookmarks
+2. Manual organisation through the tree view interface
+3. Future versions may implement device-agnostic grouping solutions
 
 ### URL Rewriting (Advanced)
 1. Navigate to the "Bookmarks URL Rewrite Rules" section
@@ -161,7 +162,7 @@ ISC License - see [LICENCE.md](LICENCE.md) for details.
 
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes with appropriate tests
+3. Make changes with appropriate tests
 4. Ensure code passes linting and type checking
 5. Submit a pull request
 
