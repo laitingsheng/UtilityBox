@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { faBookmark, faFolder } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { computed } from "vue";
 
+import icons from "../assets/icons";
 import { enableediting } from "../states/preferences";
 import { use_bookmarks_store } from "../stores/bookmarks";
 
@@ -50,8 +49,7 @@ async function update_url(event: FocusEvent): Promise<void> {
 	<dialog v-if="selected !== undefined" class="modal" open @close="bookmarks_store.selected = undefined">
 		<form method="dialog" class="modal-box card-body max-w-full">
 			<h2 class="card-title">
-				<FontAwesomeIcon :icon="selected.folder ? faFolder : faBookmark" />
-				#{{ selected.id }}
+				{{ selected.folder ? icons.FOLDER : icons.BOOKMARK }} #{{ selected.id }}
 			</h2>
 			<fieldset class="fieldset">
 				<legend class="fieldset-legend">Attributes</legend>

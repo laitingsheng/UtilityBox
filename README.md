@@ -39,7 +39,7 @@ A powerful Chrome browser extension for advanced bookmark management with automa
 - **Frontend**: Vue.js 3 with TypeScript
 - **State Management**: Reactive refs and Pinia stores
 - **UI Framework**: TailwindCSS with DaisyUI components
-- **Icons**: FontAwesome
+- **Icons**: Unicode characters
 - **Build System**: Vite
 - **Browser APIs**: Chrome Extensions Manifest V3
 

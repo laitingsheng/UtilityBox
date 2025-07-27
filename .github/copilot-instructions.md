@@ -47,6 +47,7 @@ Co-authored-by: GitHub Copilot <github-copilot[bot]@users.noreply.github.com>
 - Update README.md for new features or architectural modifications
 - Revise Copilot instructions when project structure changes
 - Fix unknown Unicode characters for proper encoding
+- Check extension manifest description in vite.config.ts reflects all current features and capabilities
 
 **Post-Commit Validation:**
 - Verify conventional commit format compliance with `git log -1`

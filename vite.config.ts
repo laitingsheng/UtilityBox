@@ -34,31 +34,35 @@ export default defineConfig({
 		{
 			name: "generate-icons",
 			async buildStart() {
-				const favicon_buffer = await readFile("favicon.png");
+				const base_sharp = sharp(await readFile("favicon.png")).png({
+					compressionLevel: 9,
+					adaptiveFiltering: true,
+				});
 				this.emitFile({
 					type: "asset",
+					source: await base_sharp.clone().resize(16, 16).toBuffer(),
 					fileName: "icon-16.png",
-					source: await sharp(favicon_buffer).resize(16, 16).png({ compressionLevel: 9 }).toBuffer(),
 				});
 				this.emitFile({
 					type: "asset",
+					source: await base_sharp.clone().resize(32, 32).toBuffer(),
 					fileName: "icon-32.png",
-					source: await sharp(favicon_buffer).resize(32, 32).png({ compressionLevel: 9 }).toBuffer(),
 				});
+
 				this.emitFile({
 					type: "asset",
+					source: await base_sharp.clone().resize(48, 48).toBuffer(),
 					fileName: "icon-48.png",
-					source: await sharp(favicon_buffer).resize(48, 48).png({ compressionLevel: 9 }).toBuffer(),
 				});
 				this.emitFile({
 					type: "asset",
+					source: await base_sharp.clone().resize(96, 96).toBuffer(),
 					fileName: "icon-96.png",
-					source: await sharp(favicon_buffer).resize(96, 96).png({ compressionLevel: 9 }).toBuffer(),
 				});
 				this.emitFile({
 					type: "asset",
-					fileName: "extension.png",
-					source: await sharp(favicon_buffer)
+					source: await base_sharp
+						.clone()
 						.resize(96, 96)
 						.extend({
 							top: 16,
@@ -67,37 +71,38 @@ export default defineConfig({
 							right: 16,
 							background: { r: 0, g: 0, b: 0, alpha: 0 },
 						})
-						.png({ compressionLevel: 9 })
 						.toBuffer(),
+					fileName: "webstore.png",
 				});
-			},
-		},
-		{
-			name: "generate-manifest",
-			generateBundle() {
 				this.emitFile({
 					type: "asset",
-					fileName: "manifest.json",
+					source: await base_sharp.clone().toBuffer(),
+					fileName: "icon.png",
+				});
+				this.emitFile({
+					type: "asset",
 					source: JSON.stringify({
 						manifest_version: 3,
 						name: lodash.startCase(package_info.name),
+						description: "Advanced bookmark management with automated organisation, cleaning, and URL rewriting capabilities for Chromium-based browsers.",
 						version: package_info.version,
-						incognito: "not_allowed",
-						options_page: "options.html",
-						permissions: ["bookmarks", "history", "storage"],
-						minimum_chrome_version: "95",
-						background: {
-							service_worker: "background.js",
-							type: "module",
-						},
 						icons: {
 							16: "icon-16.png",
 							32: "icon-32.png",
 							48: "icon-48.png",
 							96: "icon-96.png",
-							128: "extension.png",
+							128: "webstore.png",
 						},
+						background: {
+							service_worker: "background.js",
+							type: "module",
+						},
+						incognito: "not_allowed",
+						options_page: "options.html",
+						permissions: ["bookmarks", "history", "storage"],
+						minimum_chrome_version: "95",
 					} as chrome.runtime.ManifestV3),
+					fileName: "manifest.json",
 				});
 			},
 		},

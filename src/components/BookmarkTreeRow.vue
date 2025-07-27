@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { faBookmark, faFolder, faInfo, faLink } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { computed } from "vue";
 
+import icons from "../assets/icons";
 import { use_bookmarks_store } from "../stores/bookmarks";
 
 const props = defineProps<{
@@ -20,11 +19,10 @@ const current = computed(() => props.id === undefined ? undefined : bookmarks_st
 	<li v-else>
 		<details v-if="current.folder">
 			<summary>
-				<FontAwesomeIcon :icon="faFolder" />
-				{{ current.title }}
-				<button type="button" class="btn btn-primary btn-xs" @click="bookmarks_store.selected = id">
-					<FontAwesomeIcon :icon="faInfo" />
+				<button type="button" class="btn btn-ghost btn-xs p-0" @click="bookmarks_store.selected = id">
+					{{ icons.FOLDER }}
 				</button>
+				{{ current.title }}
 			</summary>
 			<ul>
 				<template v-for="child in current.children" :key="child">
@@ -33,13 +31,12 @@ const current = computed(() => props.id === undefined ? undefined : bookmarks_st
 			</ul>
 		</details>
 		<a v-else :hidden="folderonly">
-			<FontAwesomeIcon :icon="faBookmark" />
-			{{ current.title }}
-			<button type="button" class="btn btn-primary btn-xs" @click="bookmarks_store.selected = current.id">
-				<FontAwesomeIcon :icon="faInfo" />
+			<button type="button" class="btn btn-ghost btn-xs p-0" @click="bookmarks_store.selected = current.id">
+				{{ icons.BOOKMARK }}
 			</button>
+			{{ current.title }}
 			<a class="btn btn-info btn-xs" :href="current.url" target="_blank">
-				<FontAwesomeIcon :icon="faLink" />
+				{{ icons.LINK }}
 			</a>
 		</a>
 	</li>
