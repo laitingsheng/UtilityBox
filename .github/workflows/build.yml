@@ -4,10 +4,8 @@ on:
       - main
     paths:
       - .github/workflows/build.yml
-      - public/**
       - src/**
       - env.d.ts
-      - favicon.bat
       - favicon.png
       - options.html
       - package.json
@@ -34,16 +32,6 @@ jobs:
           restore-keys: |
             cache-npm-${{ runner.os }}-
             cache-npm-
-      - name: apt install
-        shell: bash
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y imagemagick
-          sudo ln -rs /usr/bin/convert /usr/bin/magick
-          mkdir -p public
-      - name: favicon
-        shell: bash
-        run: source ./favicon.bat
       - name: npm install
         shell: bash
         run: npm install

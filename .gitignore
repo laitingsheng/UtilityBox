@@ -246,7 +246,3 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/Windows,Linux,macOS,VisualStudioCode,Node,Vue
-
-### Custom ###
-/public/*.ico
-/public/*.png
