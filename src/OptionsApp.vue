@@ -155,7 +155,7 @@ chrome.storage.sync.remove([
 	<main class="bg-base-100 block px-8 space-y-4">
 		<div class="card bg-base-200">
 			<div class="card-body">
-				<h2 class="card-title">{{ icons.BOOKMARK_GROUP }} Bookmarks</h2>
+				<h2 class="card-title"><span class="text-center w-4">{{ icons.BOOKMARK_GROUP }}</span> Bookmarks</h2>
 				<ul class="menu w-full">
 					<BookmarkTreeRow v-if="bookmarks_store.parent" :id="bookmarks_store.parent" :folderonly />
 					<BookmarkTreeRow v-if="bookmarks_store.others" :id="bookmarks_store.others" :folderonly />

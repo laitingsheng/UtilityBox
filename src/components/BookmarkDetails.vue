@@ -49,7 +49,7 @@ async function update_url(event: FocusEvent): Promise<void> {
 	<dialog v-if="selected !== undefined" class="modal" open @close="bookmarks_store.selected = undefined">
 		<form method="dialog" class="modal-box card-body max-w-full">
 			<h2 class="card-title">
-				{{ selected.folder ? icons.FOLDER : icons.BOOKMARK }} #{{ selected.id }}
+				<span class="text-center w-4">{{ selected.folder ? icons.FOLDER : icons.BOOKMARK }}</span> #{{ selected.id }}
 			</h2>
 			<fieldset class="fieldset">
 				<legend class="fieldset-legend">Attributes</legend>

@@ -86,7 +86,7 @@ async function save_cleaning_rules() {
 <template>
 	<div class="card bg-base-200">
 		<div class="card-body">
-			<h2 class="card-title">{{ icons.BROOM }} Cleaning Rules</h2>
+			<h2 class="card-title"><span class="text-center w-4">{{ icons.BROOM }}</span> Cleaning Rules</h2>
 			<ul class="list">
 				<CleaningRule v-bind="cleaning_store.ruledefault" />
 				<CleaningRule v-for="(properties, hostname, index) in cleaning_store.rules" :key="index" :hostname v-bind="properties" />

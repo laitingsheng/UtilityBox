@@ -58,7 +58,7 @@ async function save_rewrite_rules() {
 	<div class="card bg-base-200 my-4">
 		<div class="card-body">
 			<h2 class="card-title">
-				{{ icons.MAGIC }} Bookmarks URL Rewrite Rules
+				<span class="text-center w-4">{{ icons.MAGIC }}</span> Bookmarks URL Rewrite Rules
 				<span class="badge badge-warning">Advanced</span>
 				<span class="badge badge-warning">Use with cautions</span>
 			</h2>

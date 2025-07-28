@@ -22,8 +22,8 @@ export default defineConfig({
 				background: "./src/background.ts",
 			},
 			output: {
-				assetFileNames: "[name].[hash].[ext]",
-				chunkFileNames: "[name].[hash].js",
+				assetFileNames: "assets/[name].[hash].[ext]",
+				chunkFileNames: "chunks/[name].[hash].js",
 				entryFileNames: "[name].js",
 			},
 		},
@@ -42,23 +42,23 @@ export default defineConfig({
 				this.emitFile({
 					type: "asset",
 					source: await base_sharp.clone().resize(16, 16).toBuffer(),
-					fileName: "icon-16.png",
+					fileName: "icons/16x16.png",
 				});
 				this.emitFile({
 					type: "asset",
 					source: await base_sharp.clone().resize(32, 32).toBuffer(),
-					fileName: "icon-32.png",
+					fileName: "icons/32x32.png",
 				});
 
 				this.emitFile({
 					type: "asset",
 					source: await base_sharp.clone().resize(48, 48).toBuffer(),
-					fileName: "icon-48.png",
+					fileName: "icons/48x48.png",
 				});
 				this.emitFile({
 					type: "asset",
 					source: await base_sharp.clone().resize(96, 96).toBuffer(),
-					fileName: "icon-96.png",
+					fileName: "icons/96x96.png",
 				});
 				this.emitFile({
 					type: "asset",
@@ -73,12 +73,12 @@ export default defineConfig({
 							background: { r: 0, g: 0, b: 0, alpha: 0 },
 						})
 						.toBuffer(),
-					fileName: "webstore.png",
+					fileName: "icons/webstore.png",
 				});
 				this.emitFile({
 					type: "asset",
 					source: await base_sharp.clone().toBuffer(),
-					fileName: "icon.png",
+					fileName: "icons/fallback.png",
 				});
 				this.emitFile({
 					type: "asset",
@@ -88,16 +88,16 @@ export default defineConfig({
 						description: "Advanced bookmark management with automated organisation, cleaning, and URL rewriting capabilities for Chromium-based browsers.",
 						version: package_info.version,
 						icons: {
-							16: "icon-16.png",
-							32: "icon-32.png",
-							48: "icon-48.png",
-							96: "icon-96.png",
-							128: "webstore.png",
+							16: "icons/16x16.png",
+							32: "icons/32x32.png",
+							48: "icons/48x48.png",
+							96: "icons/96x96.png",
+							128: "icons/webstore.png",
 						},
 						action: {
 							default_popup: "popup.html",
 							default_title: lodash.startCase(package_info.name),
-							default_icon: "icon.png",
+							default_icon: "icons/fallback.png",
 						},
 						background: {
 							service_worker: "background.js",
@@ -106,7 +106,7 @@ export default defineConfig({
 						incognito: "not_allowed",
 						options_page: "options.html",
 						permissions: ["bookmarks", "history", "storage"],
-						minimum_chrome_version: "95",
+						minimum_chrome_version: "99",
 					} as chrome.runtime.ManifestV3),
 					fileName: "manifest.json",
 				});
