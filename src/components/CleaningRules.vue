@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import icons from "../assets/icons";
-import { use_cleaning_store, type CleaningRuleProperties } from "../stores/cleaning";
+import { use_cleaning_store } from "../stores/cleaning";
+import type { CleaningRuleProperties } from "../types/cleaning";
 import CleaningRule from "./CleaningRule.vue";
 
 const cleaning_store = use_cleaning_store();

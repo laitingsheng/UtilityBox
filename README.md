@@ -1,6 +1,6 @@
 # Bookmark Manager
 
-A powerful Chrome browser extension for advanced bookmark management with automated organisation, cleaning, and URL rewriting capabilities.
+Advanced bookmark management with automated organisation, cleaning, and URL rewriting capabilities for Chromium-based browsers.
 
 ## Features
 
@@ -27,6 +27,8 @@ A powerful Chrome browser extension for advanced bookmark management with automa
 - **Separate controls** for bookmarks and browser history
 - **Subdomain matching** for comprehensive cleanup
 - **Bulk cleaning operations** with configurable rules
+- **Background service worker** for efficient processing
+- **Quick popup actions** for immediate cleaning operations
 
 ### ⚙️ Persistent Configuration
 - **Rule persistence** using Chrome's sync storage
@@ -36,11 +38,11 @@ A powerful Chrome browser extension for advanced bookmark management with automa
 
 ## Technical Stack
 
-- **Frontend**: Vue.js 3 with TypeScript
-- **State Management**: Reactive refs and Pinia stores
+- **Frontend**: Vue.js 3 with Composition API and TypeScript
+- **State Management**: Pinia stores with reactive refs
 - **UI Framework**: TailwindCSS with DaisyUI components
-- **Icons**: Unicode characters
-- **Build System**: Vite
+- **Icons**: Unicode characters and FontAwesome icons
+- **Build System**: Vite with custom manifest generation and icon processing
 - **Browser APIs**: Chrome Extensions Manifest V3
 
 ## Installation
@@ -66,13 +68,15 @@ A powerful Chrome browser extension for advanced bookmark management with automa
    - Open `chrome://extensions/`
    - Enable "Developer mode"
    - Click "Load unpacked" and select the `dist` folder
+   - The extension icon will appear in the toolbar for quick actions
+   - Access full options through right-click → "Options" or Chrome's extension management
 
 ## Development
 
 ### Prerequisites
 - Node.js 22+
 - npm or yarn
-- ImageMagick (for favicon generation)
+- Sharp (for favicon generation)
 
 ### Development Commands
 ```bash
@@ -93,12 +97,26 @@ npm run lint
 npm run format
 ```
 
+### Code Quality Standards
+- **ESLint**: Vue 3 essential rules with TypeScript support
+- **Prettier**: 120-character line width, consistent formatting across project
+- **TypeScript**: Strict type checking with Chrome API types
+- **Conventional Commits**: Required commit message format with co-author attribution
+- **GitHub Actions**: Automated build verification on main branch pushes
+- **Icon Generation**: Automated multi-resolution icon creation from `favicon.png`
+- **Manifest Generation**: Dynamic Chrome extension manifest creation from package.json
+
 ### Project Structure
 ```
 src/
-├── background.ts          # Service worker (currently minimal)
+├── background.ts          # Service worker with cleaning operations
 ├── options.ts            # Options page entry point
 ├── OptionsApp.vue        # Main application component
+├── popup.ts              # Popup entry point
+├── PopupApp.vue          # Popup application component
+├── assets/               # Static assets
+│   ├── base.css          # TailwindCSS configuration
+│   └── icons.ts          # Unicode icon definitions
 ├── components/           # Vue components
 │   ├── BookmarkDetails.vue     # Modal dialog for bookmark editing
 │   ├── BookmarkTreeRow.vue     # Tree view row component
@@ -108,10 +126,14 @@ src/
 │   └── RewriteRules.vue        # URL rewriting rules management
 ├── states/               # Reactive state management
 │   └── preferences.ts    # User preferences (editing, folder-only mode)
-└── stores/               # Pinia state management
-    ├── bookmarks.ts      # Bookmark data and operations
-    ├── cleaning.ts       # Cleaning rules and operations
-    └── rewrite.ts        # URL rewriting rules
+├── stores/               # Pinia state management
+│   ├── bookmarks.ts      # Bookmark data and operations
+│   ├── cleaning.ts       # Cleaning rules and operations
+│   └── rewrite.ts        # URL rewriting rules
+└── types/                # TypeScript type definitions
+    ├── bookmarks.ts      # Bookmark-related types
+    ├── cleaning.ts       # Cleaning rule types
+    └── messages.ts       # Background script message types
 ```
 
 ## Usage
@@ -120,8 +142,14 @@ src/
 1. Open the extension options page from Chrome's extension management
 2. Browse bookmarks in the tree view
 3. Toggle "Enable Editing" to allow modifications
-4. Click the info button (ⓘ) on any bookmark or folder to view/edit its properties
+4. Click on any bookmark or folder to view/edit its properties in the modal dialog
 5. Toggle "Folder Only" mode to focus on organisational structure
+
+### Quick Actions via Popup
+1. Click the extension icon in the toolbar to access quick actions
+2. Use "Clean Bookmarks" for immediate bookmark cleaning based on saved rules
+3. Use "Clean History" for immediate browser history cleaning
+4. Click "Options" to open the full options page for detailed management
 
 ### Setting Up Grouping Rules
 **Note**: Grouping functionality has been removed in the current version due to cross-device synchronisation limitations. Storing rules per bookmark ID creates sync conflicts when bookmark IDs differ across devices.
@@ -150,23 +178,16 @@ The extension requires the following Chrome permissions:
 
 ## Browser Compatibility
 
-- **Minimum Chrome version**: 95
+- **Minimum Chrome version**: 99
 - **Manifest version**: V3
-- **Incognito mode**: Not applicable
+- **Incognito mode**: Not allowed
 
 ## License
 
 ISC License - see [LICENCE.md](LICENCE.md) for details.
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make changes with appropriate tests
-4. Ensure code passes linting and type checking
-5. Submit a pull request
-
 ## Credits
 
-- Icon sourced from [Free Icons PNG](https://www.freeiconspng.com/img/12327)
-- Built with modern web technologies and Chrome Extensions API
+- Icons auto-generated from `favicon.png` using Sharp image processing
+- Built with modern web technologies and Chrome Extensions Manifest V3 API
+- Vue.js 3 with Composition API and TypeScript for robust development

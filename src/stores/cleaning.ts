@@ -1,10 +1,6 @@
 import { defineStore } from "pinia";
 
-export interface CleaningRuleProperties {
-	subdomains: boolean;
-	bookmarks: boolean;
-	history: boolean;
-}
+import type { CleaningRuleProperties } from "../types/cleaning";
 
 export const use_cleaning_store = defineStore("cleaning", {
 	state: () => ({

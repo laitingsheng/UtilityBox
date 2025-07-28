@@ -8,7 +8,7 @@ import icons from "../assets/icons";
 const bookmarks_store = use_bookmarks_store();
 
 const selected = computed(() => bookmarks_store.selected === undefined ? undefined : bookmarks_store.bookmarks[bookmarks_store.selected]);
-const immutable = computed(() => !enableediting.value || selected.value === undefined || selected.value.immutable || selected.value.id === bookmarks_store.parent || selected.value.id === bookmarks_store.others);
+const immutable = computed(() => !enableediting.value || selected.value === undefined || selected.value.immutable);
 
 async function update_title(event: FocusEvent): Promise<void> {
 	if (immutable.value) {

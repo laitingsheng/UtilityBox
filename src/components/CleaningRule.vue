@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { use_cleaning_store, type CleaningRuleProperties } from "../stores/cleaning";
+import { use_cleaning_store } from "../stores/cleaning";
+import type { CleaningRuleProperties } from "../types/cleaning";
 
 const props = defineProps<{
 	hostname?: string;
