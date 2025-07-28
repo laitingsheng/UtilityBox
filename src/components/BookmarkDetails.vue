@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import icons from "../assets/icons";
 import { enableediting } from "../states/preferences";
 import { use_bookmarks_store } from "../stores/bookmarks";
+import icons from "../assets/icons";
 
 const bookmarks_store = use_bookmarks_store();
 
@@ -54,26 +54,26 @@ async function update_url(event: FocusEvent): Promise<void> {
 			<fieldset class="fieldset">
 				<legend class="fieldset-legend">Attributes</legend>
 				<label class="input w-full max-w-full">
-					<span class="w-40">Title</span>
+					<span class="w-30">Title</span>
 					<input type="text" class="input input-bordered w-full max-w-full" :readonly="immutable" required :value="selected.title" @focusout="update_title" />
 				</label>
 				<label class="input w-full max-w-full">
-					<span class="w-40">Added</span>
+					<span class="w-30">Added</span>
 					<input type="text" class="input input-bordered w-full max-w-full" readonly :value="selected.added?.toLocaleString()" />
 				</label>
 				<template v-if="selected.folder">
 					<label class="input w-full max-w-full">
-						<span class="w-40">Last Modified</span>
+						<span class="w-30">Last Modified</span>
 						<input type="text" class="input input-bordered w-full max-w-full" readonly :value="selected.last_modified?.toLocaleString()" />
 					</label>
 				</template>
 				<template v-else>
 					<label class="input w-full max-w-full">
-						<span class="w-40">URL</span>
+						<span class="w-30">URL</span>
 						<input type="url" class="input input-bordered w-full max-w-full" :readonly="immutable" required :value="selected.url" @focusout="update_url" />
 					</label>
 					<label class="input w-full max-w-full">
-						<span class="w-40">Last Used</span>
+						<span class="w-30">Last Used</span>
 						<input type="text" class="input input-bordered w-full max-w-full" readonly :value="selected.last_used?.toLocaleString()" />
 					</label>
 				</template>

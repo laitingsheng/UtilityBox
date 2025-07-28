@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import icons from "../assets/icons";
 import { use_bookmarks_store } from "../stores/bookmarks";
 import { use_rewrite_store } from "../stores/rewrite";
 import RewriteRule from "./RewriteRule.vue";
@@ -57,7 +58,7 @@ async function save_rewrite_rules() {
 	<div class="card bg-base-200 my-4">
 		<div class="card-body">
 			<h2 class="card-title">
-				Bookmarks URL Rewrite Rules
+				{{ icons.MAGIC }} Bookmarks URL Rewrite Rules
 				<span class="badge badge-warning">Advanced</span>
 				<span class="badge badge-warning">Use with cautions</span>
 			</h2>

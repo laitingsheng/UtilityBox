@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import icons from "../assets/icons";
 import { use_bookmarks_store } from "../stores/bookmarks";
+import icons from "../assets/icons";
 
 const props = defineProps<{
-	id?: string;
+	id: string;
 	folderonly: boolean;
 }>();
 
 const bookmarks_store = use_bookmarks_store();
 
-const current = computed(() => props.id === undefined ? undefined : bookmarks_store.bookmarks[props.id]);
+const current = computed(() => bookmarks_store.bookmarks[props.id]);
 </script>
 
 <template>
-	<li v-if="current === undefined" class="skeleton w-full h-4"></li>
+	<li v-if="current === undefined" class="skeleton w-full h-8"></li>
 	<li v-else>
 		<details v-if="current.folder">
 			<summary>

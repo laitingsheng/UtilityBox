@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import icons from "../assets/icons";
 import { use_cleaning_store, type CleaningRuleProperties } from "../stores/cleaning";
 import CleaningRule from "./CleaningRule.vue";
 
@@ -85,7 +86,7 @@ async function save_cleaning_rules() {
 <template>
 	<div class="card bg-base-200">
 		<div class="card-body">
-			<h2 class="card-title">Cleaning Rules</h2>
+			<h2 class="card-title">{{ icons.BROOM }} Cleaning Rules</h2>
 			<ul class="list">
 				<CleaningRule v-bind="cleaning_store.ruledefault" />
 				<CleaningRule v-for="(properties, hostname, index) in cleaning_store.rules" :key="index" :hostname v-bind="properties" />

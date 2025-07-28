@@ -18,6 +18,7 @@ export default defineConfig({
 		rollupOptions: {
 			input: {
 				options: "./options.html",
+				popup: "./popup.html",
 				background: "./src/background.ts",
 			},
 			output: {
@@ -93,6 +94,11 @@ export default defineConfig({
 							96: "icon-96.png",
 							128: "webstore.png",
 						},
+						action: {
+							default_popup: "popup.html",
+							default_title: lodash.startCase(package_info.name),
+							default_icon: "icon.png",
+						},
 						background: {
 							service_worker: "background.js",
 							type: "module",
@@ -104,6 +110,9 @@ export default defineConfig({
 					} as chrome.runtime.ManifestV3),
 					fileName: "manifest.json",
 				});
+			},
+			transformIndexHtml(html) {
+				return html.replace("%%TITLE_PLACEHOLDER%%", lodash.startCase(package_info.name));
 			},
 		},
 		vueDevTools(),
