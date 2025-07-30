@@ -8,7 +8,8 @@ BookmarkManager is a Chrome browser extension for advanced bookmark management w
 - **Frontend**: Vue.js 3 with Composition API and TypeScript
 - **State Management**: Pinia stores with reactive refs
 - **UI**: TailwindCSS with DaisyUI components and FontAwesome icons
-- **Build**: Vite with custom manifest generation and icon processing
+- **Build**: Vite with EJS templating, custom manifest generation, and icon processing
+- **Utilities**: es-toolkit for efficient string manipulation functions
 - **APIs**: Chrome bookmarks, history, and storage with cross-device sync
 
 **Build Configuration:**
@@ -16,6 +17,7 @@ BookmarkManager is a Chrome browser extension for advanced bookmark management w
 - **Assets**: Inlined disabled, separate hash-based naming for cache busting
 - **Icons**: Auto-generated from `favicon.png` at multiple resolutions (16x16, 32x32, 48x48, 96x96), plus webstore icon (96x96 with padding)
 - **Manifest**: Dynamic generation with package.json metadata integration
+- **Templates**: EJS templating for HTML files with dynamic title injection
 - **Dev Tools**: Vue DevTools integration for development builds
 
 ### Core Components
@@ -50,16 +52,13 @@ Co-authored-by: GitHub Copilot <github-copilot[bot]@users.noreply.github.com>
 - Use `git commit --signoff` or `-s` parameter for required signoff
 
 **Pre-Commit Checklist:**
-- Update component descriptions in README.md project structure
+- Update README.md project structure and component descriptions
 - Revise feature lists to match actual functionality
 - Update technical stack section for dependency changes
 - Add new features to the Features section with descriptions and usage
 - Update project structure diagram for new files/directories
 - Modify installation or usage instructions for workflow changes
-- Update Core Components list for new Vue components
-- Modify file path references in documentation
-- Update build configuration details for entry point changes
-- Update Copilot instructions if configuration files have changed (package.json, eslint.config.ts, vite.config.ts, tsconfig.*.json, .prettierrc.json, .editorconfig) to reflect latest standards
+- Update Copilot instructions if configuration files have changed (package.json, eslint.config.ts, vite.config.ts, tsconfig.*.json, .prettierrc.json, .editorconfig)
 - Fix unknown Unicode characters for proper encoding
 - Check extension manifest description in vite.config.ts reflects all current features and capabilities
 
@@ -71,10 +70,16 @@ Co-authored-by: GitHub Copilot <github-copilot[bot]@users.noreply.github.com>
 ### Code Style & Architecture
 **General Standards:**
 - Sort imports before making changes for consistent module organisation
-- Prefer snake_case, then kebab-case over camelCase for naming
+- Use `@` prefix for all internal imports instead of relative paths (`@/assets/icons` not `../assets/icons`)
+- Group imports: external libraries first, then internal imports with `@` prefix, sorted alphabetically within groups
 - Explicit `undefined` and `null` comparisons (`=== undefined`, `!== null`)
 - Use nullish coalescing (`??`) and optional chaining (`?.`) when possible
 - Add non-null postfix (`!`) for globals TypeScript cannot recognise as non-null
+
+**Naming Conventions:**
+- **snake_case** for all variables and functions (`user_name`, `get_bookmark_data`)
+- **PascalCase** for all classes, types, interfaces and Vue components (`BookmarkItem`, `CleaningRule`, `BookmarkTreeRow`)
+- **kebab-case** for TypeScript and JavaScript file names (`bookmark-details.ts`, `cleaning-rules.js`)
 
 **Formatting & Linting Standards:**
 - **Prettier**: 120 character line width, 2-space indentation, double quotes, trailing commas, LF line endings
@@ -100,8 +105,3 @@ Co-authored-by: GitHub Copilot <github-copilot[bot]@users.noreply.github.com>
 - Pinia stores for complex state logic
 - Reactive refs for component-local state
 - Chrome API integration within store actions
-
-### Documentation Standards
-- Update documentation to reflect technical changes
-- Focus on functionality and architecture in explanations
-- Use third person or passive voice for professional objectivity

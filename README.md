@@ -7,12 +7,11 @@ Advanced bookmark management with automated organisation, cleaning, and URL rewr
 ### 📁 Smart Bookmark Organisation
 - **Interactive bookmark tree view** with expandable folders
 - **Folder-only view mode** to hide individual bookmarks and focus on organisation
-- **Live bookmark synchronisation** with Chrome's bookmark API
 - **Edit bookmark properties** (title, URL) directly in the interface
+- **Protected system folders** (Bookmarks Bar and Other Bookmarks)
 
 ### 🎛️ Flexible Interface Controls
 - **Enable Editing** toggle to prevent accidental modifications
-- **Protected system folders** (Bookmarks Bar and Other Bookmarks)
 - **Modal dialogue** for detailed bookmark attribute editing
 - **Real-time bookmark synchronisation** with Chrome's API
 
@@ -24,26 +23,27 @@ Advanced bookmark management with automated organisation, cleaning, and URL rewr
 
 ### 🧹 Intelligent Cleaning System
 - **Hostname-based cleaning rules** for targeted bookmark and history removal
-- **Separate controls** for bookmarks and browser history
-- **Subdomain matching** for comprehensive cleanup
-- **Bulk cleaning operations** with configurable rules
+- **Separate controls** for bookmarks and browser history cleaning
+- **Subdomain matching** for comprehensive cleanup operations
+- **Configurable default rules** that apply to new hostname entries
 - **Background service worker** for efficient processing
-- **Quick popup actions** for immediate cleaning operations
+- **Immediate cleaning** via popup interface or options page
 
 ### ⚙️ Persistent Configuration
 - **Rule persistence** using Chrome's sync storage
 - **Cross-device synchronisation** of all settings and rules
 - **Automatic rule loading** on extension startup
-- **Real-time rule updates** and validation
 
 ## Technical Stack
 
 - **Frontend**: Vue.js 3 with Composition API and TypeScript
 - **State Management**: Pinia stores with reactive refs
-- **UI Framework**: TailwindCSS with DaisyUI components
-- **Icons**: Unicode characters and FontAwesome icons
-- **Build System**: Vite with custom manifest generation and icon processing
-- **Browser APIs**: Chrome Extensions Manifest V3
+- **UI Framework**: TailwindCSS 4 with DaisyUI components
+- **Icons**: Unicode characters (no external icon dependencies)
+- **Build System**: Vite 7 with EJS templating, custom manifest generation, and automated icon processing
+- **Utilities**: es-toolkit for efficient string manipulation functions
+- **Development**: Vue DevTools integration, ESLint + Prettier, conventional commits
+- **Browser APIs**: Chrome Extensions Manifest V3 (bookmarks, history, storage)
 
 ## Installation
 
@@ -89,6 +89,9 @@ npm run dev
 # Build for production
 npm run build
 
+# Preview built extension
+npm run preview
+
 # Type checking
 npm run type-check
 
@@ -99,41 +102,47 @@ npm run format
 
 ### Code Quality Standards
 - **ESLint**: Vue 3 essential rules with TypeScript support
-- **Prettier**: 120-character line width, consistent formatting across project
+- **Prettier**: 120-character line width, 2-space indentation, double quotes
 - **TypeScript**: Strict type checking with Chrome API types
 - **Conventional Commits**: Required commit message format with co-author attribution
-- **GitHub Actions**: Automated build verification on main branch pushes
-- **Icon Generation**: Automated multi-resolution icon creation from `favicon.png`
-- **Manifest Generation**: Dynamic Chrome extension manifest creation from package.json
+- **Path Aliases**: `@/` prefix for all internal imports instead of relative paths
+- **Automated builds**: Multi-resolution icon generation and dynamic manifest creation
 
 ### Project Structure
 ```
-src/
-├── background.ts          # Service worker with cleaning operations
-├── options.ts            # Options page entry point
-├── OptionsApp.vue        # Main application component
-├── popup.ts              # Popup entry point
-├── PopupApp.vue          # Popup application component
-├── assets/               # Static assets
-│   ├── base.css          # TailwindCSS configuration
-│   └── icons.ts          # Unicode icon definitions
-├── components/           # Vue components
-│   ├── BookmarkDetails.vue     # Modal dialog for bookmark editing
-│   ├── BookmarkTreeRow.vue     # Tree view row component
-│   ├── CleaningRule.vue        # Individual cleaning rule component
-│   ├── CleaningRules.vue       # Cleaning rules management
-│   ├── RewriteRule.vue         # Individual rewrite rule component
-│   └── RewriteRules.vue        # URL rewriting rules management
-├── states/               # Reactive state management
-│   └── preferences.ts    # User preferences (editing, folder-only mode)
-├── stores/               # Pinia state management
-│   ├── bookmarks.ts      # Bookmark data and operations
-│   ├── cleaning.ts       # Cleaning rules and operations
-│   └── rewrite.ts        # URL rewriting rules
-└── types/                # TypeScript type definitions
-    ├── bookmarks.ts      # Bookmark-related types
-    ├── cleaning.ts       # Cleaning rule types
-    └── messages.ts       # Background script message types
+├── src/                  # Source code
+│   ├── background.ts           # Service worker with cleaning operations
+│   ├── options.ts             # Options page entry point
+│   ├── OptionsApp.vue         # Main application component
+│   ├── popup.ts              # Popup entry point
+│   ├── PopupApp.vue          # Popup application component
+│   ├── assets/               # Static assets
+│   │   ├── base.css          # TailwindCSS configuration
+│   │   └── icons.ts          # Unicode icon definitions
+│   ├── components/           # Vue components
+│   │   ├── BookmarkDetails.vue     # Modal dialog for bookmark editing
+│   │   ├── BookmarkTreeRow.vue     # Tree view row component
+│   │   ├── CleaningRule.vue        # Individual cleaning rule component
+│   │   ├── CleaningRules.vue       # Cleaning rules management
+│   │   ├── RewriteRule.vue         # Individual rewrite rule component
+│   │   └── RewriteRules.vue        # URL rewriting rules management
+│   ├── states/               # Reactive state management
+│   │   └── preferences.ts    # User preferences (editing, folder-only mode)
+│   ├── stores/               # Pinia state management
+│   │   ├── bookmarks.ts      # Bookmark data and operations
+│   │   ├── cleaning.ts       # Cleaning rules and operations
+│   │   └── rewrite.ts        # URL rewriting rules
+│   └── types/                # TypeScript type definitions
+│       ├── bookmarks.ts      # Bookmark-related types
+│       ├── cleaning.ts       # Cleaning rule types
+│       └── messages.ts       # Background script message types
+├── options.html             # Options page template
+├── popup.html              # Popup page template
+├── vite.config.ts          # Build configuration with icon generation
+├── eslint.config.ts        # ESLint configuration
+├── tsconfig.json           # TypeScript configuration
+├── .prettierrc.json        # Prettier formatting rules
+└── favicon.png             # Source icon for multi-resolution generation
 ```
 
 ## Usage
@@ -147,15 +156,16 @@ src/
 
 ### Quick Actions via Popup
 1. Click the extension icon in the toolbar to access quick actions
-2. Use "Clean Bookmarks" for immediate bookmark cleaning based on saved rules
-3. Use "Clean History" for immediate browser history cleaning
-4. Click "Options" to open the full options page for detailed management
+2. Use "Clean Bookmarks" or "Clean History" for immediate cleaning based on saved rules
+3. Click "Options" to open the full options page for detailed management
 
 ### Setting Up Grouping Rules
-**Note**: Grouping functionality has been removed in the current version due to cross-device synchronisation limitations. Storing rules per bookmark ID creates sync conflicts when bookmark IDs differ across devices.
-1. Use the cleaning and rewriting features to organise bookmarks
-2. Manual organisation through the tree view interface
-3. Future versions may implement device-agnostic grouping solutions
+**Note**: Grouping functionality has been removed due to cross-device synchronisation limitations. Storing rules per bookmark ID creates sync conflicts when bookmark IDs differ across devices.
+
+Current organisation options:
+- Use cleaning and rewriting features to organise bookmarks
+- Manual organisation through the tree view interface
+- Future versions may implement device-agnostic grouping solutions
 
 ### URL Rewriting (Advanced)
 1. Navigate to the "Bookmarks URL Rewrite Rules" section
@@ -188,6 +198,4 @@ ISC License - see [LICENCE.md](LICENCE.md) for details.
 
 ## Credits
 
-- Icons auto-generated from `favicon.png` using Sharp image processing
-- Built with modern web technologies and Chrome Extensions Manifest V3 API
-- Vue.js 3 with Composition API and TypeScript for robust development
+Built with Vue.js 3, TypeScript, TailwindCSS, and Chrome Extensions Manifest V3 API. Uses EJS templating for dynamic HTML generation and Sharp for automated multi-resolution icon processing from `favicon.png`.

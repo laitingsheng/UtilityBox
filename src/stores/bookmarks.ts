@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-import type { Bookmark } from "../types/bookmarks";
+import type { Bookmark } from "@/types/bookmarks";
 
 export const use_bookmarks_store = defineStore("bookmarks", {
 	state: () => ({

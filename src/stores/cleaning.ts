@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-import type { CleaningRuleProperties } from "../types/cleaning";
+import type { CleaningRuleProperties } from "@/types/cleaning";
 
 export const use_cleaning_store = defineStore("cleaning", {
 	state: () => ({

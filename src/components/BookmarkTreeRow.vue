@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { use_bookmarks_store } from "../stores/bookmarks";
-import icons from "../assets/icons";
+import icons from "@/assets/icons";
+import { use_bookmarks_store } from "@/stores/bookmarks";
 
 const props = defineProps<{
 	id: string;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import icons from "./assets/icons";
-import type { Message, MessageResponse } from "./types/messages";
+import icons from "@/assets/icons";
+import type { Message, MessageResponse } from "@/types/messages";
 
 async function request_clean_bookmarks(): Promise<void> {
 	switch ((await chrome.runtime.sendMessage({

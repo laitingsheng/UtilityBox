@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import icons from "./assets/icons";
-import { enableediting, folderonly } from "./states/preferences";
-import { use_bookmarks_store } from "./stores/bookmarks";
-import BookmarkDetails from "./components/BookmarkDetails.vue";
-import BookmarkTreeRow from "./components/BookmarkTreeRow.vue";
-import CleaningRules from "./components/CleaningRules.vue";
-import RewriteRules from "./components/RewriteRules.vue";
+import icons from "@/assets/icons";
+import BookmarkDetails from "@/components/BookmarkDetails.vue";
+import BookmarkTreeRow from "@/components/BookmarkTreeRow.vue";
+import CleaningRules from "@/components/CleaningRules.vue";
+import RewriteRules from "@/components/RewriteRules.vue";
+import { enableediting, folderonly } from "@/states/preferences";
+import { use_bookmarks_store } from "@/stores/bookmarks";
 
 const bookmarks_store = use_bookmarks_store();
 

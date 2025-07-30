@@ -1,5 +1,5 @@
-import type { CleaningRuleProperties } from "./types/cleaning";
-import type { Message, MessageResponse } from "./types/messages";
+import type { CleaningRuleProperties } from "@/types/cleaning";
+import type { Message, MessageResponse } from "@/types/messages";
 
 const cleaning = {
 	bookmarks: false,

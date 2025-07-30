@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { use_rewrite_store } from "../stores/rewrite";
+import { use_rewrite_store } from "@/stores/rewrite";
 
 const props = defineProps<{
 	pattern?: string;

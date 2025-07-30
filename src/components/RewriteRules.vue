@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import icons from "../assets/icons";
-import { use_bookmarks_store } from "../stores/bookmarks";
-import { use_rewrite_store } from "../stores/rewrite";
-import RewriteRule from "./RewriteRule.vue";
+import icons from "@/assets/icons";
+import RewriteRule from "@/components/RewriteRule.vue";
+import { use_bookmarks_store } from "@/stores/bookmarks";
+import { use_rewrite_store } from "@/stores/rewrite";
 
 const bookmarks_store = use_bookmarks_store();
 const rewrite_store = use_rewrite_store();

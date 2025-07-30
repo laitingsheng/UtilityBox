@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { enableediting } from "../states/preferences";
-import { use_bookmarks_store } from "../stores/bookmarks";
-import icons from "../assets/icons";
+import icons from "@/assets/icons";
+import { enableediting } from "@/states/preferences";
+import { use_bookmarks_store } from "@/stores/bookmarks";
 
 const bookmarks_store = use_bookmarks_store();
 

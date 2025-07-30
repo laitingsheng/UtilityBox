@@ -4,9 +4,10 @@ import { readFile } from "node:fs/promises";
 import tailwindcss from "@tailwindcss/vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
-import lodash from "lodash";
+import { startCase } from "es-toolkit/string";
 import sharp from "sharp";
 import { defineConfig } from "vite";
+import { ViteEjsPlugin } from "vite-plugin-ejs";
 import vueDevTools from "vite-plugin-vue-devtools";
 
 import package_info from "./package.json";
@@ -32,6 +33,9 @@ export default defineConfig({
 		tailwindcss(),
 		vue(),
 		vueJsx(),
+		ViteEjsPlugin({
+			title: startCase(package_info.name),
+		}),
 		{
 			name: "generate-icons",
 			async buildStart() {
@@ -84,7 +88,7 @@ export default defineConfig({
 					type: "asset",
 					source: JSON.stringify({
 						manifest_version: 3,
-						name: lodash.startCase(package_info.name),
+						name: startCase(package_info.name),
 						description: "Advanced bookmark management with automated organisation, cleaning, and URL rewriting capabilities for Chromium-based browsers.",
 						version: package_info.version,
 						icons: {
@@ -96,7 +100,7 @@ export default defineConfig({
 						},
 						action: {
 							default_popup: "popup.html",
-							default_title: lodash.startCase(package_info.name),
+							default_title: startCase(package_info.name),
 							default_icon: "icons/fallback.png",
 						},
 						background: {
@@ -110,9 +114,6 @@ export default defineConfig({
 					} as chrome.runtime.ManifestV3),
 					fileName: "manifest.json",
 				});
-			},
-			transformIndexHtml(html) {
-				return html.replace("%%TITLE_PLACEHOLDER%%", lodash.startCase(package_info.name));
 			},
 		},
 		vueDevTools(),
