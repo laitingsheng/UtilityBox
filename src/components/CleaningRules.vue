@@ -1,27 +1,33 @@
 <script setup lang="ts">
 import icons from "@/assets/icons";
 import CleaningRule from "@/components/CleaningRule.vue";
+import { enableediting } from "@/states/preferences";
 import { use_cleaning_store } from "@/stores/cleaning";
 import type { CleaningRuleProperties } from "@/types/cleaning";
 
 const cleaning_store = use_cleaning_store();
 
-chrome.storage.sync.get<{
-	cleaningrules: Record<string, CleaningRuleProperties>;
-	cleaningruledefault: CleaningRuleProperties;
-}>({
-	cleaningrules: {},
-	cleaningruledefault: {
-		subdomains: true,
-		bookmarks: false,
-		history: true,
-	},
-}).then(({ cleaningrules, cleaningruledefault }) => {
-	cleaning_store.rules = cleaningrules;
-	cleaning_store.ruledefault = cleaningruledefault;
-}, (reason) => {
-	console.error(`chrome.storage.sync.get: ${reason}`);
-});
+chrome.storage.sync
+	.get<{
+		cleaningrules: Record<string, CleaningRuleProperties>;
+		cleaningruledefault: CleaningRuleProperties;
+	}>({
+		cleaningrules: {},
+		cleaningruledefault: {
+			subdomains: true,
+			bookmarks: false,
+			history: true,
+		},
+	})
+	.then(
+		({ cleaningrules, cleaningruledefault }) => {
+			cleaning_store.rules = cleaningrules;
+			cleaning_store.ruledefault = cleaningruledefault;
+		},
+		(reason) => {
+			console.error(`chrome.storage.sync.get: ${reason}`);
+		},
+	);
 
 async function clean_bookmarks() {
 	cleaning_store.bookmarks = true;
@@ -34,11 +40,14 @@ async function clean_bookmarks() {
 		if (!properties.bookmarks) {
 			continue;
 		}
-		const pattern = new RegExp(`^https?://${properties.subdomains ? "(?:.+\\.)?" : ""}${hostname}(?:$|[/?#:])`);
 		for (const result of await chrome.bookmarks.search({
 			query: hostname,
 		})) {
-			if (result.url !== undefined && pattern.test(result.url)) {
+			if (result.url === undefined) {
+				continue;
+			}
+			const url = new URL(result.url);
+			if (url.hostname === hostname || (properties.subdomains && url.hostname.endsWith(`.${hostname}`))) {
 				console.info(`Deleting bookmark #${result.id}: ${result.url}...`);
 				await chrome.bookmarks.remove(result.id);
 			}
@@ -58,13 +67,16 @@ async function clean_history() {
 		if (!properties.history) {
 			continue;
 		}
-		const pattern = new RegExp(`^https?://${properties.subdomains ? "(?:.+\\.)?" : ""}${hostname}(?:$|[/?#:])`);
 		for (const result of await chrome.history.search({
 			text: hostname,
 			maxResults: 1e9,
 			startTime: 0,
 		})) {
-			if (result.url !== undefined && pattern.test(result.url)) {
+			if (result.url === undefined) {
+				continue;
+			}
+			const url = new URL(result.url);
+			if (url.hostname === hostname || (properties.subdomains && url.hostname.endsWith(`.${hostname}`))) {
 				console.info(`Deleting history entry #${result.id}: ${result.url}...`);
 				await chrome.history.deleteUrl({ url: result.url });
 			}
@@ -74,12 +86,14 @@ async function clean_history() {
 }
 
 async function save_cleaning_rules() {
-	await chrome.storage.sync.set({
-		cleaningruledefault: cleaning_store.ruledefault,
-		cleaningrules: cleaning_store.rules,
-	}).catch((reason) => {
-		console.error(`chrome.storage.sync.set: ${reason}`);
-	});
+	await chrome.storage.sync
+		.set({
+			cleaningruledefault: cleaning_store.ruledefault,
+			cleaningrules: cleaning_store.rules,
+		})
+		.catch((reason) => {
+			console.error(`chrome.storage.sync.set: ${reason}`);
+		});
 	cleaning_store.updated = false;
 }
 </script>
@@ -87,15 +101,31 @@ async function save_cleaning_rules() {
 <template>
 	<div class="card bg-base-200">
 		<div class="card-body">
-			<h2 class="card-title"><span class="text-center w-4">{{ icons.BROOM }}</span> Cleaning Rules</h2>
+			<h2 class="card-title">
+				<span class="text-center w-4">{{ icons.BROOM }}</span> Cleaning Rules
+			</h2>
 			<ul class="list">
 				<CleaningRule v-bind="cleaning_store.ruledefault" />
-				<CleaningRule v-for="(properties, hostname, index) in cleaning_store.rules" :key="index" :hostname v-bind="properties" />
+				<CleaningRule
+					v-for="(properties, hostname, index) in cleaning_store.rules"
+					:key="index"
+					:hostname
+					v-bind="properties" />
 			</ul>
 			<div class="card-actions justify-end">
-				<button type="button" class="btn btn-primary" :disabled="cleaning_store.bookmarks" @click="clean_bookmarks">Clean Bookmarks</button>
-				<button type="button" class="btn btn-primary" :disabled="cleaning_store.history" @click="clean_history">Clean History</button>
-				<button type="button" class="btn btn-primary" :disabled="!cleaning_store.updated" @click="save_cleaning_rules">Save</button>
+				<button type="button" class="btn btn-primary" :disabled="cleaning_store.bookmarks" @click="clean_bookmarks">
+					Clean Bookmarks
+				</button>
+				<button type="button" class="btn btn-primary" :disabled="cleaning_store.history" @click="clean_history">
+					Clean History
+				</button>
+				<button
+					type="button"
+					class="btn btn-primary"
+					:disabled="!enableediting || !cleaning_store.updated"
+					@click="save_cleaning_rules">
+					Save
+				</button>
 			</div>
 		</div>
 	</div>

@@ -1,201 +1,159 @@
-# Bookmark Manager
+# Utility Box
 
-Advanced bookmark management with automated organisation, cleaning, and URL rewriting capabilities for Chromium-based browsers.
+Utility Box is a Chromium extension for keeping bookmarks and browsing history tidy with synchronised hostname rules and one-click cleaning tools.
 
 ## Features
 
-### 📁 Smart Bookmark Organisation
-- **Interactive bookmark tree view** with expandable folders
-- **Folder-only view mode** to hide individual bookmarks and focus on organisation
-- **Edit bookmark properties** (title, URL) directly in the interface
-- **Protected system folders** (Bookmarks Bar and Other Bookmarks)
+### 🧹 Hostname-based cleaning
+- Maintain a library of hostnames with per-host toggles for bookmarks, history, and subdomain matching
+- Apply rules immediately from the options page or the popup without reloading the browser
+- Background service worker performs deletions without blocking the UI
 
-### 🎛️ Flexible Interface Controls
-- **Enable Editing** toggle to prevent accidental modifications
-- **Modal dialogue** for detailed bookmark attribute editing
-- **Real-time bookmark synchronisation** with Chrome's API
+### 🔐 Safeguarded editing
+- "Enable Editing" toggle prevents accidental rule changes during day-to-day use
+- Default rule row defines the settings applied to any new hostname you add
+- Validation catches duplicate hostnames before they make it into storage
 
-### 🔧 Advanced URL Rewriting
-- **Regular expression-based URL rewriting** for bookmark cleanup
-- **Batch URL transformation** across all bookmarks
-- **Pattern-based replacement** with full regex support
-- **Advanced feature** with appropriate warnings for careful use
+### 🔄 Sync-friendly storage
+- All preferences and rules are saved in Chrome sync storage for cross-device continuity
+- Automatic storage updates keep the interface aligned with remote changes
 
-### 🧹 Intelligent Cleaning System
-- **Hostname-based cleaning rules** for targeted bookmark and history removal
-- **Separate controls** for bookmarks and browser history cleaning
-- **Subdomain matching** for comprehensive cleanup operations
-- **Configurable default rules** that apply to new hostname entries
-- **Background service worker** for efficient processing
-- **Immediate cleaning** via popup interface or options page
+### ⚡ Quick actions popup
+- Toolbar popup triggers bookmark or history cleaning in a single click
+- Shortcut to open the full options page when you need to adjust rules
 
-### ⚙️ Persistent Configuration
-- **Rule persistence** using Chrome's sync storage
-- **Cross-device synchronisation** of all settings and rules
-- **Automatic rule loading** on extension startup
+## Technical stack
 
-## Technical Stack
-
-- **Frontend**: Vue.js 3 with Composition API and TypeScript
-- **State Management**: Pinia stores with reactive refs
-- **UI Framework**: TailwindCSS 4 with DaisyUI components
-- **Icons**: Unicode characters (no external icon dependencies)
-- **Build System**: Vite 7 with EJS templating, custom manifest generation, and automated icon processing
-- **Utilities**: es-toolkit for efficient string manipulation functions
-- **Development**: Vue DevTools integration, ESLint + Prettier, conventional commits
+- **Framework**: Vue 3 (Composition API + TypeScript)
+- **State management**: Pinia stores
+- **Styling**: Tailwind CSS 4 with DaisyUI components
+- **Utilities**: es-toolkit for lightweight string helpers
+- **Build tooling**: Vite 7 with EJS templating, icon generation, and Vue DevTools integration
 - **Browser APIs**: Chrome Extensions Manifest V3 (bookmarks, history, storage)
 
 ## Installation
 
-### From Source
+### From source
 1. Clone the repository:
    ```bash
-   git clone https://github.com/laitingsheng/BookmarkManager.git
-   cd BookmarkManager
+   git clone https://github.com/laitingsheng/UtilityBox.git
+   cd UtilityBox
    ```
-
 2. Install dependencies:
    ```bash
    npm install
    ```
-
 3. Build the extension:
    ```bash
    npm run build
    ```
-
-4. Load the extension in Chrome:
+4. Load the build output into Chromium:
    - Open `chrome://extensions/`
-   - Enable "Developer mode"
-   - Click "Load unpacked" and select the `dist` folder
-   - The extension icon will appear in the toolbar for quick actions
-   - Access full options through right-click → "Options" or Chrome's extension management
+   - Enable **Developer mode**
+   - Choose **Load unpacked** and select the `dist` directory
+   - Pin the Utility Box icon for quick access to popup actions
 
-## Development
+## Development workflow
 
 ### Prerequisites
-- Node.js 22+
-- npm or yarn
-- Sharp (for favicon generation)
+- Node.js 22 or newer
+- npm 10+
+- Native dependencies for [Sharp](https://sharp.pixelplumbing.com/) (used for icon generation)
 
-### Development Commands
+### Common commands
 ```bash
 # Install dependencies
 npm install
 
-# Start development server
+# Run Vite in watch mode for extension development
 npm run dev
 
-# Build for production
-npm run build
-
-# Preview built extension
-npm run preview
-
-# Type checking
+# Type-check the project
 npm run type-check
 
-# Linting and formatting
+# Lint and auto-fix issues
 npm run lint
+
+# Format Vue and TypeScript sources
 npm run format
+
+# Build production assets
+npm run build
+
+# Preview the production bundle
+npm run preview
 ```
 
-### Code Quality Standards
-- **ESLint**: Vue 3 essential rules with TypeScript support
-- **Prettier**: 120-character line width, 2-space indentation, double quotes
-- **TypeScript**: Strict type checking with Chrome API types
-- **Conventional Commits**: Required commit message format with co-author attribution
-- **Path Aliases**: `@/` prefix for all internal imports instead of relative paths
-- **Automated builds**: Multi-resolution icon generation and dynamic manifest creation
-
-### Project Structure
-```
-├── src/                  # Source code
-│   ├── background.ts           # Service worker with cleaning operations
-│   ├── options.ts             # Options page entry point
-│   ├── OptionsApp.vue         # Main application component
-│   ├── popup.ts              # Popup entry point
-│   ├── PopupApp.vue          # Popup application component
-│   ├── assets/               # Static assets
-│   │   ├── base.css          # TailwindCSS configuration
-│   │   └── icons.ts          # Unicode icon definitions
-│   ├── components/           # Vue components
-│   │   ├── BookmarkDetails.vue     # Modal dialog for bookmark editing
-│   │   ├── BookmarkTreeRow.vue     # Tree view row component
-│   │   ├── CleaningRule.vue        # Individual cleaning rule component
-│   │   ├── CleaningRules.vue       # Cleaning rules management
-│   │   ├── RewriteRule.vue         # Individual rewrite rule component
-│   │   └── RewriteRules.vue        # URL rewriting rules management
-│   ├── states/               # Reactive state management
-│   │   └── preferences.ts    # User preferences (editing, folder-only mode)
-│   ├── stores/               # Pinia state management
-│   │   ├── bookmarks.ts      # Bookmark data and operations
-│   │   ├── cleaning.ts       # Cleaning rules and operations
-│   │   └── rewrite.ts        # URL rewriting rules
-│   └── types/                # TypeScript type definitions
-│       ├── bookmarks.ts      # Bookmark-related types
-│       ├── cleaning.ts       # Cleaning rule types
-│       └── messages.ts       # Background script message types
-├── options.html             # Options page template
-├── popup.html              # Popup page template
-├── vite.config.ts          # Build configuration with icon generation
-├── eslint.config.ts        # ESLint configuration
-├── tsconfig.json           # TypeScript configuration
-├── .prettierrc.json        # Prettier formatting rules
-└── favicon.png             # Source icon for multi-resolution generation
-```
+### Code quality guidelines
+- ESLint (Vue 3 essential rules) and Prettier are configured with British English conventions
+- Path aliases require `@/` for internal modules
+- Strict TypeScript configuration targets the Chrome extensions environment
+- Conventional commits with documented co-authors keep history consistent
 
 ## Usage
 
-### Basic Bookmark Management
-1. Open the extension options page from Chrome's extension management
-2. Browse bookmarks in the tree view
-3. Toggle "Enable Editing" to allow modifications
-4. Click on any bookmark or folder to view/edit its properties in the modal dialog
-5. Toggle "Folder Only" mode to focus on organisational structure
+### Managing cleaning rules
+1. Open **chrome://extensions/** → Utility Box → **Options**
+2. Toggle **Enable Editing** when you intend to make changes
+3. Use the first row to adjust default values applied to new hostnames
+4. Add hostnames to create rules; choose whether to target bookmarks, history, and/or subdomains
+5. Click **Save** to persist updates to Chrome sync storage
 
-### Quick Actions via Popup
-1. Click the extension icon in the toolbar to access quick actions
-2. Use "Clean Bookmarks" or "Clean History" for immediate cleaning based on saved rules
-3. Click "Options" to open the full options page for detailed management
+### Running cleaning jobs
+- Press **Clean Bookmarks** or **Clean History** in the options page to apply the current rules immediately
+- From the popup, trigger the same actions without leaving the current tab
+- The background service worker skips hostnames that are disabled for the requested mode and logs its progress in the console
 
-### Setting Up Grouping Rules
-**Note**: Grouping functionality has been removed due to cross-device synchronisation limitations. Storing rules per bookmark ID creates sync conflicts when bookmark IDs differ across devices.
-
-Current organisation options:
-- Use cleaning and rewriting features to organise bookmarks
-- Manual organisation through the tree view interface
-- Future versions may implement device-agnostic grouping solutions
-
-### URL Rewriting (Advanced)
-1. Navigate to the "Bookmarks URL Rewrite Rules" section
-2. Add regular expression patterns and replacement strings
-3. Click "Run" to apply transformations to all matching bookmark URLs
-4. **Use with caution** - this feature can modify bookmark URLs permanently
-
-### Cleaning Rules
-1. Add hostname patterns in the "Cleaning Rules" section
-2. Configure whether to clean bookmarks, history, or both
-3. Set subdomain matching preferences
-4. Use "Clean Bookmarks" or "Clean History" to execute removal operations
+### Staying in sync
+- Storage changes from other devices are mirrored into the interface automatically
+- Disable **Enable Editing** when you are done to avoid stray modifications
 
 ## Permissions
 
-The extension requires the following Chrome permissions:
-- `bookmarks` - Read and modify browser bookmarks
-- `history` - Access and modify browser history (for cleaning features)
-- `storage` - Store configuration and rules
+The extension requests the following Chrome permissions:
+- `bookmarks` – required to locate and remove saved bookmarks
+- `history` – required to search and delete browsing history entries
+- `storage` – used for synchronised rule and preference storage
 
-## Browser Compatibility
+## Browser compatibility
 
-- **Minimum Chrome version**: 99
-- **Manifest version**: V3
-- **Incognito mode**: Not allowed
+- **Minimum Chromium version**: 99
+- **Manifest version**: 3
+- **Incognito mode**: Not supported
 
-## License
+## Project structure
+```
+├── src/
+│   ├── assets/
+│   │   ├── base.css            # Tailwind and DaisyUI configuration
+│   │   └── icons.ts            # Centralised emoji icon map
+│   ├── components/
+│   │   ├── CleaningRule.vue    # Single hostname rule row
+│   │   └── CleaningRules.vue   # Rule list and cleaning actions
+│   ├── states/
+│   │   └── preferences.ts      # Reactive editing toggle synced with storage
+│   ├── stores/
+│   │   └── cleaning.ts         # Pinia store for rules and request state
+│   ├── types/
+│   │   ├── cleaning.ts         # Cleaning rule types
+│   │   └── messages.ts         # Background message contracts
+│   ├── background.ts           # Service worker handling cleaning jobs
+│   ├── options.ts              # Options page entry (Vue + Pinia bootstrapping)
+│   ├── OptionsApp.vue          # Options page layout and controls
+│   ├── popup.ts                # Popup entry point
+│   └── PopupApp.vue            # Popup actions for quick cleaning
+├── options.html                # Options page template with EJS placeholders
+├── popup.html                  # Popup template
+├── vite.config.ts              # Manifest, icon pipeline, and build setup
+├── eslint.config.ts            # Shared linting rules
+├── tsconfig*.json              # TypeScript project references
+└── favicon.png                 # Source icon used for all generated sizes
+```
 
-ISC License - see [LICENCE.md](LICENCE.md) for details.
+## Licence
+
+ISC Licence – see [LICENCE.md](LICENCE.md) for the full text.
 
 ## Credits
 
-Built with Vue.js 3, TypeScript, TailwindCSS, and Chrome Extensions Manifest V3 API. Uses EJS templating for dynamic HTML generation and Sharp for automated multi-resolution icon processing from `favicon.png`.
+Utility Box is built with Vue 3, TypeScript, Tailwind CSS, DaisyUI, and the Chrome Extensions APIs. Icon assets are generated automatically from `favicon.png` via Sharp during the build.

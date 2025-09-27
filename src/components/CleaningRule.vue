@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { enableediting } from "@/states/preferences";
 import { use_cleaning_store } from "@/stores/cleaning";
 import type { CleaningRuleProperties } from "@/types/cleaning";
 
-const props = defineProps<{
-	hostname?: string;
-} & Partial<CleaningRuleProperties>>();
+const props = defineProps<
+	{
+		hostname?: string;
+	} & Partial<CleaningRuleProperties>
+>();
 
 const cleaning_store = use_cleaning_store();
 
@@ -85,18 +88,36 @@ function toggle_history(event: Event) {
 	<li class="list-row join">
 		<label class="input validator join-item w-full max-w-full">
 			Hostname
-			<input type="text" pattern="(?:[\p{L}\p{N}\-]+\.)+[\p{L}\p{N}]{2,}" placeholder="example.com" autocomplete="off" spellcheck="false" :value="hostname" @focusout="update_hostname" />
+			<input
+				type="text"
+				pattern="(?:[\p{L}\p{N}\-]+\.)*[\p{L}\p{N}]{2,}"
+				placeholder="example.com"
+				autocomplete="off"
+				spellcheck="false"
+				:readonly="!enableediting"
+				:value="hostname"
+				@focusout="update_hostname" />
 		</label>
 		<label class="label join-item">
-			<input type="checkbox" class="toggle" :checked="subdomains" @change="toggle_subdomains" />
+			<input
+				type="checkbox"
+				class="toggle"
+				:checked="subdomains"
+				:disabled="!enableediting"
+				@change="toggle_subdomains" />
 			Subdomains
 		</label>
 		<label class="label join-item">
-			<input type="checkbox" class="toggle" :checked="bookmarks" @change="toggle_bookmarks" />
+			<input
+				type="checkbox"
+				class="toggle"
+				:checked="bookmarks"
+				:disabled="!enableediting"
+				@change="toggle_bookmarks" />
 			Bookmarks
 		</label>
 		<label class="label join-item">
-			<input type="checkbox" class="toggle" :checked="history" @change="toggle_history" />
+			<input type="checkbox" class="toggle" :checked="history" :disabled="!enableediting" @change="toggle_history" />
 			History
 		</label>
 	</li>

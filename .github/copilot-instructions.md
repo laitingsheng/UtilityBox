@@ -1,13 +1,13 @@
 # GitHub Copilot Instructions
 
 ## Project Overview
-BookmarkManager is a Chrome browser extension for advanced bookmark management with automated organisation, cleaning, and URL rewriting capabilities.
+Utility Box is a Chromium extension for synchronised hostname-based bookmark and history cleaning with a lightweight rule management interface.
 
 ### Technology Stack & Architecture
 - **Platform**: Chrome Extension Manifest V3 (minimum Chrome 99)
 - **Frontend**: Vue.js 3 with Composition API and TypeScript
 - **State Management**: Pinia stores with reactive refs
-- **UI**: TailwindCSS with DaisyUI components and FontAwesome icons
+- **UI**: TailwindCSS with DaisyUI components and emoji icons (via `src/assets/icons.ts`)
 - **Build**: Vite with EJS templating, custom manifest generation, and icon processing
 - **Utilities**: es-toolkit for efficient string manipulation functions
 - **APIs**: Chrome bookmarks, history, and storage with cross-device sync
@@ -21,11 +21,13 @@ BookmarkManager is a Chrome browser extension for advanced bookmark management w
 - **Dev Tools**: Vue DevTools integration for development builds
 
 ### Core Components
-- `OptionsApp.vue` - Main application entry point
-- `BookmarkTreeRow.vue` - Recursive tree view component for bookmark hierarchy
-- `BookmarkDetails.vue` - Modal dialog for bookmark editing
-- `CleaningRules.vue` / `RewriteRules.vue` - Rule management interfaces
-- Store modules: bookmarks, cleaning, rewrite state management
+- `OptionsApp.vue` – Options UI wrapper with navbar and controls
+- `components/CleaningRules.vue` – Rule list, storage sync, and cleaning actions
+- `components/CleaningRule.vue` – Single hostname rule row with validation
+- `PopupApp.vue` – Toolbar popup for one-click cleaning actions
+- `states/preferences.ts` – Reactive editing toggle backed by Chrome sync storage
+- `stores/cleaning.ts` – Pinia store tracking rules and cleaning state
+- `background.ts` – Service worker executing bookmark/history deletions
 
 ## Development Standards
 
@@ -77,9 +79,9 @@ Co-authored-by: GitHub Copilot <github-copilot[bot]@users.noreply.github.com>
 - Add non-null postfix (`!`) for globals TypeScript cannot recognise as non-null
 
 **Naming Conventions:**
-- **snake_case** for all variables and functions (`user_name`, `get_bookmark_data`)
-- **PascalCase** for all classes, types, interfaces and Vue components (`BookmarkItem`, `CleaningRule`, `BookmarkTreeRow`)
-- **kebab-case** for TypeScript and JavaScript file names (`bookmark-details.ts`, `cleaning-rules.js`)
+- **snake_case** for all variables and functions (`cleaning_store`, `clean_bookmarks`)
+- **PascalCase** for all classes, types, interfaces and Vue components (`CleaningRule`, `CleaningRules`, `PopupApp`)
+- **kebab-case** for TypeScript and JavaScript file names when multiple words are needed (`background-service.ts`, `cleaning-store.ts`)
 
 **Formatting & Linting Standards:**
 - **Prettier**: 120 character line width, 2-space indentation, double quotes, trailing commas, LF line endings

@@ -1,5 +1,6 @@
 {
-  "name": "bookmark-manager",
+  "name": "utility-box",
+  "description": "Chromium extension for synchronised hostname-based bookmark and history cleaning.",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -13,6 +14,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "es-toolkit": "^1.39.10",
     "pinia": "^3.0.3",
     "vue": "^3.5.17"
   },
@@ -29,7 +31,6 @@
     "@vue/eslint-config-typescript": "^14.5.1",
     "@vue/tsconfig": "^0.7.0",
     "daisyui": "^5.0.46",
-    "es-toolkit": "^1.39.8",
     "eslint": "^9.29.0",
     "eslint-plugin-vue": "~10.2.0",
     "jiti": "^2.4.2",

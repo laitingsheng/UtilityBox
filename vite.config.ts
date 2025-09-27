@@ -89,7 +89,7 @@ export default defineConfig({
 					source: JSON.stringify({
 						manifest_version: 3,
 						name: startCase(package_info.name),
-						description: "Advanced bookmark management with automated organisation, cleaning, and URL rewriting capabilities for Chromium-based browsers.",
+						description: package_info.description,
 						version: package_info.version,
 						icons: {
 							16: "icons/16x16.png",
