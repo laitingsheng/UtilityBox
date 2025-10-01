@@ -34,7 +34,75 @@ jobs:
             cache-npm-
       - name: npm install
         shell: bash
-        run: npm install
+        run: >-
+          npm install
       - name: npm run build
         shell: bash
-        run: npm run build
+        run: >-
+          npm run build
+      - name: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.sha }}
+          path: dist/
+          retention-days: 1
+          compression-level: 9
+  publish-edge:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: publish-edge
+    steps:
+      - name: download
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ github.sha }}
+          path: dist/
+      - name: zip
+        working-directory: dist
+        shell: bash
+        run: >-
+          zip -9r "../${GITHUB_SHA}.zip" .
+      - name: authentication
+        shell: bash
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        run: |-
+          cat <<EOF >authentication.headers.txt
+          Authorization: ApiKey ${API_KEY}
+          X-ClientID: ${CLIENT_ID}
+          EOF
+      - name: draft
+        env:
+          ENDPOINT: https://api.addons.microsoftedge.microsoft.com/v1/products/${{ secrets.PRODUCT_ID }}/submissions/draft/package
+        shell: bash
+        run: >-
+          curl -f -s -D response.headers.txt -H @authentication.headers.txt -H 'Content-Type: application/zip' -S -T "${GITHUB_SHA}.zip" -X POST "${ENDPOINT}"
+      - name: operation
+        id: operation
+        shell: bash
+        run: |-
+          {
+            echo -n 'OPERATION_ID=';
+            grep -i -o -P '^location:\s+\K(.+?)$' response.headers.txt | tr -d '\r\n';
+          } | tee -a "${GITHUB_ENV}"
+      - name: check
+        env:
+          ENDPOINT: https://api.addons.microsoftedge.microsoft.com/v1/products/${{ secrets.PRODUCT_ID }}/submissions/draft/package/operations/${{ env.OPERATION_ID }}
+        shell: bash
+        run: |-
+          status="Failed"
+          attempt=0
+          while curl -f -o response.json -s -H @authentication.headers.txt -L -S -X GET "${ENDPOINT}"; do
+            status=$(jq -r '.status' response.json)
+            if [[ "${status}" != "InProgress" ]]; then
+              break
+            fi
+            attempt=$((attempt + 1))
+            if [[ "${attempt}" -ge 30 ]]; then
+              break
+            fi
+            sleep 1
+          done
+          jq -C . response.json
+          [[ "${status}" == "Succeeded" ]]
