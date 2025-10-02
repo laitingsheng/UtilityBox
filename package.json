@@ -14,7 +14,6 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "es-toolkit": "^1.39.10",
     "pinia": "^3.0.3",
     "vue": "^3.5.17"
   },
@@ -33,6 +32,7 @@
     "daisyui": "^5.0.46",
     "eslint": "^9.29.0",
     "eslint-plugin-vue": "~10.2.0",
+    "es-toolkit": "^1.39.10",
     "jiti": "^2.4.2",
     "npm-run-all2": "^8.0.4",
     "prettier": "3.5.3",

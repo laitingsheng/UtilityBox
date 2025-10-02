@@ -1,11 +1,19 @@
 <script setup lang="ts">
+import { ref } from "vue";
+
 import icons from "@/assets/icons";
 import CleaningRule from "@/components/CleaningRule.vue";
-import { enableediting } from "@/states/preferences";
 import { use_cleaning_store } from "@/stores/cleaning";
 import type { CleaningRuleProperties } from "@/types/cleaning";
 
 const cleaning_store = use_cleaning_store();
+const enableediting = ref(false);
+
+const message_cleaning_rules = chrome.i18n.getMessage("cleaning_rules");
+const message_clean_bookmarks = chrome.i18n.getMessage("clean_bookmarks");
+const message_clean_history = chrome.i18n.getMessage("clean_history");
+const message_save = chrome.i18n.getMessage("save");
+const message_editing = chrome.i18n.getMessage("editing");
 
 chrome.storage.sync
 	.get<{
@@ -95,6 +103,7 @@ async function save_cleaning_rules() {
 			console.error(`chrome.storage.sync.set: ${reason}`);
 		});
 	cleaning_store.updated = false;
+	enableediting.value = false;
 }
 </script>
 
@@ -102,29 +111,34 @@ async function save_cleaning_rules() {
 	<div class="card bg-base-200">
 		<div class="card-body">
 			<h2 class="card-title">
-				<span class="text-center w-4">{{ icons.BROOM }}</span> Cleaning Rules
+				<span class="text-center w-4">{{ icons.BROOM }}</span> {{ message_cleaning_rules }}
+				<label class="label ml-auto">
+					<input type="checkbox" class="toggle toggle-primary" v-model="enableediting" />
+					{{ message_editing }}
+				</label>
 			</h2>
 			<ul class="list">
-				<CleaningRule v-bind="cleaning_store.ruledefault" />
+				<CleaningRule :enableediting v-bind="cleaning_store.ruledefault" />
 				<CleaningRule
 					v-for="(properties, hostname, index) in cleaning_store.rules"
 					:key="index"
+					:enableediting
 					:hostname
 					v-bind="properties" />
 			</ul>
 			<div class="card-actions justify-end">
 				<button type="button" class="btn btn-primary" :disabled="cleaning_store.bookmarks" @click="clean_bookmarks">
-					Clean Bookmarks
+					{{ message_clean_bookmarks }}
 				</button>
 				<button type="button" class="btn btn-primary" :disabled="cleaning_store.history" @click="clean_history">
-					Clean History
+					{{ message_clean_history }}
 				</button>
 				<button
 					type="button"
 					class="btn btn-primary"
 					:disabled="!enableediting || !cleaning_store.updated"
 					@click="save_cleaning_rules">
-					Save
+					{{ message_save }}
 				</button>
 			</div>
 		</div>

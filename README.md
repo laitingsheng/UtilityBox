@@ -8,14 +8,15 @@ Utility Box is a Chromium extension for keeping bookmarks and browsing history t
 - Maintain a library of hostnames with per-host toggles for bookmarks, history, and subdomain matching
 - Apply rules immediately from the options page or the popup without reloading the browser
 - Background service worker performs deletions without blocking the UI
+- Automatic real-time history deletion as you browse—visited URLs matching active rules are removed instantly
 
 ### 🔐 Safeguarded editing
-- "Enable Editing" toggle prevents accidental rule changes during day-to-day use
+- "Enable Editing" toggle in the Cleaning Rules card prevents accidental rule changes during day-to-day use
 - Default rule row defines the settings applied to any new hostname you add
 - Validation catches duplicate hostnames before they make it into storage
 
 ### 🔄 Sync-friendly storage
-- All preferences and rules are saved in Chrome sync storage for cross-device continuity
+- All rules are saved in Chrome sync storage for cross-device continuity
 - Automatic storage updates keep the interface aligned with remote changes
 
 ### ⚡ Quick actions popup
@@ -94,7 +95,7 @@ npm run preview
 
 ### Managing cleaning rules
 1. Open **chrome://extensions/** → Utility Box → **Options**
-2. Toggle **Enable Editing** when you intend to make changes
+2. Toggle **Enable Editing** in the Cleaning Rules card when you intend to make changes
 3. Use the first row to adjust default values applied to new hostnames
 4. Add hostnames to create rules; choose whether to target bookmarks, history, and/or subdomains
 5. Click **Save** to persist updates to Chrome sync storage
@@ -103,6 +104,7 @@ npm run preview
 - Press **Clean Bookmarks** or **Clean History** in the options page to apply the current rules immediately
 - From the popup, trigger the same actions without leaving the current tab
 - The background service worker skips hostnames that are disabled for the requested mode and logs its progress in the console
+- History entries are also deleted automatically in real-time whenever you visit a URL that matches an active history cleaning rule
 
 ### Staying in sync
 - Storage changes from other devices are mirrored into the interface automatically
@@ -129,26 +131,31 @@ The extension requests the following Chrome permissions:
 │   │   └── icons.ts            # Centralised emoji icon map
 │   ├── components/
 │   │   ├── CleaningRule.vue    # Single hostname rule row
-│   │   └── CleaningRules.vue   # Rule list and cleaning actions
-│   ├── states/
-│   │   └── preferences.ts      # Reactive editing toggle synced with storage
+│   │   └── CleaningRules.vue   # Rule list with editing toggle and cleaning actions
 │   ├── stores/
 │   │   └── cleaning.ts         # Pinia store for rules and request state
 │   ├── types/
 │   │   ├── cleaning.ts         # Cleaning rule types
 │   │   └── messages.ts         # Background message contracts
-│   ├── background.ts           # Service worker handling cleaning jobs
+│   ├── background.ts           # Service worker handling cleaning jobs and real-time history deletion
 │   ├── options.ts              # Options page entry (Vue + Pinia bootstrapping)
-│   ├── OptionsApp.vue          # Options page layout and controls
+│   ├── OptionsApp.vue          # Options page layout with navbar
 │   ├── popup.ts                # Popup entry point
 │   └── PopupApp.vue            # Popup actions for quick cleaning
 ├── options.html                # Options page template with EJS placeholders
 ├── popup.html                  # Popup template
-├── vite.config.ts              # Manifest, icon pipeline, and build setup
+├── vite.config.ts              # Manifest, icon pipeline, locale generation, and build setup
 ├── eslint.config.ts            # Shared linting rules
 ├── tsconfig*.json              # TypeScript project references
 └── favicon.png                 # Source icon used for all generated sizes
 ```
+
+## Notes
+
+### Microsoft Edge store listing description
+
+#### English (en)
+Utility Box keeps your Microsoft Edge profiles tidy by automatically pruning bookmarks and browsing history entries that match hostname rules you configure once and sync everywhere. History is deleted in real-time as you browse, and you can also trigger manual clean-ups for bookmarks and history from the options dashboard or Edge toolbar. Configure granular filters, toggle safety prompts, and monitor live clean-up status without manual review hurdles.
 
 ## Licence
 
@@ -156,4 +163,5 @@ ISC Licence – see [LICENCE.md](LICENCE.md) for the full text.
 
 ## Credits
 
-Utility Box is built with Vue 3, TypeScript, Tailwind CSS, DaisyUI, and the Chrome Extensions APIs. Icon assets are generated automatically from `favicon.png` via Sharp during the build.
+- Icon sourced from [Free Icons PNG](https://www.freeiconspng.com/img/12327)
+- Utility Box is built with Vue 3, TypeScript, Tailwind CSS, DaisyUI, and the Chrome Extensions APIs. Icon assets are generated automatically from `favicon.png` via Sharp during the build.

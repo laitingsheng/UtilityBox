@@ -1,15 +1,21 @@
 <script setup lang="ts">
-import { enableediting } from "@/states/preferences";
 import { use_cleaning_store } from "@/stores/cleaning";
 import type { CleaningRuleProperties } from "@/types/cleaning";
 
 const props = defineProps<
 	{
+		enableediting: boolean;
 		hostname?: string;
 	} & Partial<CleaningRuleProperties>
 >();
 
 const cleaning_store = use_cleaning_store();
+
+const message_hostname = chrome.i18n.getMessage("hostname");
+const message_subdomains = chrome.i18n.getMessage("subdomains");
+const message_bookmarks = chrome.i18n.getMessage("bookmarks");
+const message_history = chrome.i18n.getMessage("history");
+const message_duplicate_hostname = chrome.i18n.getMessage("duplicate_hostname");
 
 function update_hostname(event: FocusEvent) {
 	const input = event.target as HTMLInputElement;
@@ -24,7 +30,7 @@ function update_hostname(event: FocusEvent) {
 			cleaning_store.updated = true;
 			input.value = "";
 		} else if (props.hostname !== input.value) {
-			input.setCustomValidity(`Duplicate hostname in rules is not allowed.`);
+			input.setCustomValidity(message_duplicate_hostname);
 			input.reportValidity();
 			return;
 		}
@@ -87,7 +93,7 @@ function toggle_history(event: Event) {
 <template>
 	<li class="list-row join">
 		<label class="input validator join-item w-full max-w-full">
-			Hostname
+			{{ message_hostname }}
 			<input
 				type="text"
 				pattern="(?:[\p{L}\p{N}\-]+\.)*[\p{L}\p{N}]{2,}"
@@ -105,7 +111,7 @@ function toggle_history(event: Event) {
 				:checked="subdomains"
 				:disabled="!enableediting"
 				@change="toggle_subdomains" />
-			Subdomains
+			{{ message_subdomains }}
 		</label>
 		<label class="label join-item">
 			<input
@@ -114,11 +120,11 @@ function toggle_history(event: Event) {
 				:checked="bookmarks"
 				:disabled="!enableediting"
 				@change="toggle_bookmarks" />
-			Bookmarks
+			{{ message_bookmarks }}
 		</label>
 		<label class="label join-item">
 			<input type="checkbox" class="toggle" :checked="history" :disabled="!enableediting" @change="toggle_history" />
-			History
+			{{ message_history }}
 		</label>
 	</li>
 </template>

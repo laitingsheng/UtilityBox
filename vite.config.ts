@@ -1,5 +1,5 @@
-import { fileURLToPath, URL } from "node:url";
 import { readFile } from "node:fs/promises";
+import { fileURLToPath, URL } from "node:url";
 
 import tailwindcss from "@tailwindcss/vite";
 import vue from "@vitejs/plugin-vue";
@@ -84,12 +84,46 @@ export default defineConfig({
 					source: await base_sharp.clone().toBuffer(),
 					fileName: "icons/fallback.png",
 				});
+				const messages: Record<string, { message: string }> = {
+					name: {
+						message: startCase(package_info.name),
+					},
+					description: {
+						message: package_info.description,
+					},
+					duplicate_hostname: {
+						message: "Duplicate hostname in rules is not allowed.",
+					},
+				};
+				for (const key of [
+					"bookmarks",
+					"clean_bookmarks",
+					"clean_history",
+					"cleaning_rules",
+					"editing",
+					"history",
+					"hostname",
+					"options",
+					"save",
+					"subdomains",
+				]) {
+					messages[key] = {
+						message: startCase(key),
+					};
+				}
+				this.emitFile({
+					type: "asset",
+					source: JSON.stringify(messages),
+					fileName: "_locales/en/messages.json",
+				});
 				this.emitFile({
 					type: "asset",
 					source: JSON.stringify({
 						manifest_version: 3,
-						name: startCase(package_info.name),
-						description: package_info.description,
+						current_locale: "en",
+						default_locale: "en",
+						name: "__MSG_name__",
+						description: "__MSG_description__",
 						version: package_info.version,
 						icons: {
 							16: "icons/16x16.png",

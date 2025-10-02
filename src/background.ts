@@ -17,11 +17,14 @@ async function clean_bookmarks(): Promise<void> {
 		if (!properties.bookmarks) {
 			continue;
 		}
-		const pattern = new RegExp(`^https?://${properties.subdomains ? "(?:.+\\.)?" : ""}${hostname}(?:$|[/?#:])`);
 		for (const result of await chrome.bookmarks.search({
 			query: hostname,
 		})) {
-			if (result.url !== undefined && pattern.test(result.url)) {
+			if (result.url === undefined) {
+				continue;
+			}
+			const url = new URL(result.url);
+			if (url.hostname === hostname || (properties.subdomains && url.hostname.endsWith(`.${hostname}`))) {
 				console.info(`Deleting bookmark #${result.id}: ${result.url}...`);
 				await chrome.bookmarks.remove(result.id);
 			}
@@ -41,13 +44,16 @@ async function clean_history(): Promise<void> {
 		if (!properties.history) {
 			continue;
 		}
-		const pattern = new RegExp(`^https?://${properties.subdomains ? "(?:.+\\.)?" : ""}${hostname}(?:$|[/?#:])`);
 		const results = await chrome.history.search({
 			text: hostname,
 			maxResults: 1e9,
 		});
 		for (const result of results) {
-			if (result.url !== undefined && pattern.test(result.url)) {
+			if (result.url === undefined) {
+				continue;
+			}
+			const url = new URL(result.url);
+			if (url.hostname === hostname || (properties.subdomains && url.hostname.endsWith(`.${hostname}`))) {
 				console.info(`Deleting history entry for ${result.url}...`);
 				await chrome.history.deleteUrl({ url: result.url });
 			}
@@ -88,6 +94,29 @@ chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) =>
 				} as MessageResponse);
 				clean_history();
 			}
+			return;
+		}
+	}
+});
+
+chrome.history.onVisited.addListener(async (result) => {
+	if (result.url === undefined) {
+		return;
+	}
+	const { cleaningrules } = await chrome.storage.sync.get<{
+		cleaningrules: Record<string, CleaningRuleProperties>;
+	}>({
+		cleaningrules: {},
+	});
+	for (const hostname in cleaningrules) {
+		const properties = cleaningrules[hostname];
+		if (!properties.history) {
+			continue;
+		}
+		const url = new URL(result.url);
+		if (url.hostname === hostname || (properties.subdomains && url.hostname.endsWith(`.${hostname}`))) {
+			console.info(`Deleting visited history entry for ${result.url}...`);
+			await chrome.history.deleteUrl({ url: result.url });
 			return;
 		}
 	}

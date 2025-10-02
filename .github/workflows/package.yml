@@ -82,24 +82,21 @@ jobs:
         id: operation
         shell: bash
         run: |-
-          {
-            echo -n 'OPERATION_ID=';
-            grep -i -o -P '^location:\s+\K(.+?)$' response.headers.txt | tr -d '\r\n';
-          } | tee -a "${GITHUB_ENV}"
+          OPERATION_ID=$(grep -i -o -P '^location:\s+\K(.+?)$' response.headers.txt | tr -d '\r\n')
+          echo "::add-mask::${OPERATION_ID}"
+          echo "OPERATION_ID=${OPERATION_ID}" >>"${GITHUB_ENV}"
       - name: check
         env:
           ENDPOINT: https://api.addons.microsoftedge.microsoft.com/v1/products/${{ secrets.PRODUCT_ID }}/submissions/draft/package/operations/${{ env.OPERATION_ID }}
         shell: bash
         run: |-
-          status="Failed"
-          attempt=0
-          while curl -f -o response.json -s -H @authentication.headers.txt -L -S -X GET "${ENDPOINT}"; do
-            status=$(jq -r '.status' response.json)
-            if [[ "${status}" != "InProgress" ]]; then
+          status="InProgress"
+          for attempt in {1..60}; do
+            if ! curl -f -o response.json -s -H @authentication.headers.txt -L -S -X GET "${ENDPOINT}"; then
               break
             fi
-            attempt=$((attempt + 1))
-            if [[ "${attempt}" -ge 30 ]]; then
+            status=$(jq -r '.status' response.json)
+            if [[ "${status}" != "InProgress" ]]; then
               break
             fi
             sleep 1

@@ -2,10 +2,18 @@
 import icons from "@/assets/icons";
 import type { Message, MessageResponse } from "@/types/messages";
 
+const message_clean_bookmarks = chrome.i18n.getMessage("clean_bookmarks");
+const message_clean_history = chrome.i18n.getMessage("clean_history");
+const message_options = chrome.i18n.getMessage("options");
+
 async function request_clean_bookmarks(): Promise<void> {
-	switch ((await chrome.runtime.sendMessage({
-		type: "clean.bookmarks",
-	} as Message) as MessageResponse).status) {
+	switch (
+		(
+			(await chrome.runtime.sendMessage({
+				type: "clean.bookmarks",
+			} as Message)) as MessageResponse
+		).status
+	) {
 		case "started":
 			console.info("Bookmarks cleaning started.");
 			break;
@@ -19,9 +27,13 @@ async function request_clean_bookmarks(): Promise<void> {
 }
 
 async function request_clean_history(): Promise<void> {
-	switch ((await chrome.runtime.sendMessage({
-		type: "clean.history",
-	} as Message) as MessageResponse).status) {
+	switch (
+		(
+			(await chrome.runtime.sendMessage({
+				type: "clean.history",
+			} as Message)) as MessageResponse
+		).status
+	) {
 		case "started":
 			console.info("History cleaning started.");
 			break;
@@ -48,9 +60,24 @@ html {
 <template>
 	<main class="bg-base-100 block">
 		<ul class="menu w-full">
-			<li><a @click="request_clean_bookmarks"><span class="text-center w-4">{{ icons.BROOM }}</span> Clean Bookmarks</a></li>
-			<li><a @click="request_clean_history"><span class="text-center w-4">{{ icons.BROOM }}</span> Clean History</a></li>
-			<li><a @click="open_options"><span class="text-center w-4">{{ icons.GEAR }}</span> Options</a></li>
+			<li>
+				<a @click="request_clean_bookmarks">
+					<span class="text-center w-4">{{ icons.BROOM }}</span>
+					{{ message_clean_bookmarks }}
+				</a>
+			</li>
+			<li>
+				<a @click="request_clean_history">
+					<span class="text-center w-4">{{ icons.BROOM }}</span>
+					{{ message_clean_history }}
+				</a>
+			</li>
+			<li>
+				<a @click="open_options">
+					<span class="text-center w-4">{{ icons.GEAR }}</span>
+					{{ message_options }}
+				</a>
+			</li>
 		</ul>
 	</main>
 </template>
